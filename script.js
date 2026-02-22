@@ -80,7 +80,8 @@ const RecibosSystem = {
 
         if (username === this.data.config.username && password === this.data.config.password) {
             sessionStorage.setItem('loggedIn', 'true');
-            bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+            const instance = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+            if (instance) instance.hide();
             this.showMainContent();
             this.showAlert('Inicio de sesión exitoso.', 'success', null);
         } else {
@@ -263,7 +264,7 @@ const RecibosSystem = {
 
         } catch (e) {
             console.error('Error cargando datos de Supabase:', e);
-            this.showAlert('Error al cargar datos. Usando valores por defecto.', 'warning', null);
+            this.showAlert('Error al cargar datos: ' + (e.message || 'Error desconocido'), 'warning', null);
             this.data = { luz: {}, agua: {}, config: { floors: ['1', '2', '3'], username: 'master', password: '12345', phone: '945426574' } };
             this.floors = this.data.config.floors;
         } finally {
@@ -282,7 +283,7 @@ const RecibosSystem = {
             this.updateDashboard();
         } catch (e) {
             console.error('Error al guardar en Supabase:', e);
-            this.showAlert('Error al conectar con la base de datos.', 'danger', null);
+            this.showAlert('Error al guardar configuración: ' + (e.message || 'Error desconocido'), 'danger', null);
         } finally {
             this.showSpinner(false);
         }
@@ -409,7 +410,7 @@ const RecibosSystem = {
             this.passwordAttempts++;
             if (this.passwordAttempts >= this.maxAttempts) {
                 this.lockoutUntil = Date.now() + this.lockoutDuration;
-                this.showAlert('Bloqueo de seguridad activado.', 'danger', 'report');
+                this.showAlert('Sistema bloqueado por 5 minutos.', 'danger', 'report');
                 bootstrap.Modal.getInstance(document.getElementById('passwordModal')).hide();
             } else {
                 this.showAlert(`Incorrecta. Quedan ${this.maxAttempts - this.passwordAttempts} intentos.`, 'danger', 'report');
@@ -442,7 +443,7 @@ const RecibosSystem = {
             this.updateFloors();
             this.showAlert(`Piso ${floor} eliminado.`, 'success', 'config');
         } catch (e) {
-            this.showAlert('Error al eliminar el piso.', 'danger', 'config');
+            this.showAlert('Error al eliminar el piso: ' + (e.message || 'Error desconocido'), 'danger', 'config');
         }
     },
 
@@ -492,39 +493,40 @@ const RecibosSystem = {
         const res = { ...inps, consumption: inps.curr - inps.prev };
 
         if (service === 'agua') {
-            inps.sewerage = parseFloat(gV('agua-sewerage'));
-            res.waterCost = res.consumption * inps.price;
-            res.sewerageCost = res.consumption * inps.sewerage;
+            res.sewerage = parseFloat(gV('agua-sewerage'));
+            res.waterCost = res.consumption * res.price;
+            res.sewerageCost = res.consumption * res.sewerage;
             res.subTotal = res.waterCost + res.sewerageCost;
         } else {
-            inps.fixedAlumbrado = parseFloat(gV('luz-fixed-alumbrado'));
-            inps.fixedLey = parseFloat(gV('luz-fixed-ley'));
-            res.subTotal = res.consumption * inps.price;
-            res.gastosFijos = inps.fixedCargo + inps.fixedAlumbrado + inps.fixedLey + inps.fixedAporte;
+            res.fixedAlumbrado = parseFloat(gV('luz-fixed-alumbrado'));
+            res.fixedLey = parseFloat(gV('luz-fixed-ley'));
+            res.subTotal = res.consumption * res.price;
+            res.gastosFijos = res.fixedCargo + res.fixedAlumbrado + res.fixedLey + res.fixedAporte;
         }
 
         res.impuesto = res.subTotal * 0.18;
-        res.total = res.subTotal + res.impuesto + (service === 'agua' ? (inps.fixedCargo + inps.fixedAporte) : res.gastosFijos);
+        res.total = res.subTotal + res.impuesto + (service === 'agua' ? (res.fixedCargo + res.fixedAporte) : res.gastosFijos);
 
         try {
             this.showSpinner(true);
             const { error } = await sb.from('receipts').upsert({
-                service, floor: inps.floor, year: inps.year, month: inps.month, data: res
+                service, floor: res.floor, year: res.year, month: res.month, data: res
             }, { onConflict: 'service, floor, year, month' });
 
             if (error) throw error;
 
-            if (!this.data[service][inps.floor]) this.data[service][inps.floor] = {};
-            if (!this.data[service][inps.floor][inps.year]) this.data[service][inps.floor][inps.year] = {};
-            this.data[service][inps.floor][inps.year][inps.month] = res;
+            if (!this.data[service][res.floor]) this.data[service][res.floor] = {};
+            if (!this.data[service][res.floor][res.year]) this.data[service][res.floor][res.year] = {};
+            this.data[service][res.floor][res.year][res.month] = res;
 
-            this.showAlert('Guardado.', 'success', service);
+            this.showAlert('Guardado exitosamente.', 'success', service);
             this.updateDashboard();
             form.reset();
             const yearEl = document.getElementById(`${service}-year`);
             if (yearEl) yearEl.value = this.currentYear;
         } catch (e) {
-            this.showAlert('Error al guardar.', 'danger', service);
+            console.error('Error guardando:', e);
+            this.showAlert('Error al guardar: ' + (e.message || 'Error desconocido'), 'danger', service);
         } finally {
             this.showSpinner(false);
         }
@@ -576,8 +578,8 @@ const RecibosSystem = {
                 <td>${r.consumption.toFixed(2)}</td>
                 <td>S/ ${r.total.toFixed(2)}</td>
                 <td>
-                    <button class="btn btn-sm btn-outline-primary" onclick="RecibosSystem.editReceipt('${service}', '${r.floor}', ${r.year}, ${r.month})">Edit</button>
-                    <button class="btn btn-sm btn-outline-danger" onclick="RecibosSystem.promptPassword('deleteReceipt', ['${service}', '${r.floor}', ${r.year}, ${r.month}])">X</button>
+                    <button class="btn btn-sm btn-outline-primary" onclick="RecibosSystem.editReceipt('${service}', '${r.floor}', ${r.year}, ${r.month})">Editar</button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="RecibosSystem.promptPassword('deleteReceipt', ['${service}', '${r.floor}', ${r.year}, ${r.month}])">Eliminar</button>
                 </td>
             </tr>`;
         });
@@ -586,15 +588,104 @@ const RecibosSystem = {
     },
 
     async deleteReceipt(service, floor, year, month) {
-        if (!confirm('¿Eliminar?')) return;
+        if (!confirm('¿Eliminar recibo?')) return;
         try {
-            await sb.from('receipts').delete().match({ service, floor, year, month });
+            const { error } = await sb.from('receipts').delete().match({ service, floor, year, month });
+            if (error) throw error;
             delete this.data[service][floor][year][month];
             this.generateReport();
             this.updateDashboard();
-            this.showAlert('Eliminado.', 'success', 'report');
+            this.showAlert('Eliminado correctamente.', 'success', 'report');
         } catch (e) {
-            this.showAlert('Error.', 'danger', 'report');
+            this.showAlert('Error al eliminar: ' + (e.message || 'Error desconocido'), 'danger', 'report');
+        }
+    },
+
+    editReceipt(service, floor, year, month) {
+        const record = this.data[service][floor][year][month];
+        if (!record) return;
+
+        document.getElementById('edit-service').value = service;
+        document.getElementById('edit-floor').value = floor;
+        document.getElementById('edit-year').value = year;
+        document.getElementById('edit-month').value = month;
+        document.getElementById('edit-prev').value = record.prev;
+        document.getElementById('edit-curr').value = record.curr;
+        document.getElementById('edit-price').value = record.price;
+        document.getElementById('edit-fixed-aporte').value = record.fixedAporte;
+        document.getElementById('edit-fixed-cargo').value = record.fixedCargo;
+
+        const sewerageDiv = document.getElementById('edit-sewerage-container');
+        const alumbradoDiv = document.getElementById('edit-fixed-alumbrado-container');
+        const leyDiv = document.getElementById('edit-fixed-ley-container');
+
+        if (service === 'agua') {
+            sewerageDiv.style.display = 'block';
+            alumbradoDiv.style.display = 'none';
+            leyDiv.style.display = 'none';
+            document.getElementById('edit-sewerage').value = record.sewerage;
+        } else {
+            sewerageDiv.style.display = 'none';
+            alumbradoDiv.style.display = 'block';
+            leyDiv.style.display = 'block';
+            document.getElementById('edit-fixed-alumbrado').value = record.fixedAlumbrado;
+            document.getElementById('edit-fixed-ley').value = record.fixedLey;
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById('editReceiptModal'));
+        modal.show();
+    },
+
+    async saveEditedReceipt(event) {
+        event.preventDefault();
+        const service = document.getElementById('edit-service').value;
+        const floor = document.getElementById('edit-floor').value;
+        const year = parseInt(document.getElementById('edit-year').value);
+        const month = parseInt(document.getElementById('edit-month').value);
+
+        const gV = (id) => document.getElementById(id).value;
+        const res = {
+            floor, year, month,
+            prev: parseFloat(gV('edit-prev')),
+            curr: parseFloat(gV('edit-curr')),
+            price: parseFloat(gV('edit-price')),
+            fixedAporte: parseFloat(gV('edit-fixed-aporte')),
+            fixedCargo: parseFloat(gV('edit-fixed-cargo')),
+            consumption: parseFloat(gV('edit-curr')) - parseFloat(gV('edit-prev'))
+        };
+
+        if (service === 'agua') {
+            res.sewerage = parseFloat(gV('edit-sewerage'));
+            res.waterCost = res.consumption * res.price;
+            res.sewerageCost = res.consumption * res.sewerage;
+            res.subTotal = res.waterCost + res.sewerageCost;
+        } else {
+            res.fixedAlumbrado = parseFloat(gV('edit-fixed-alumbrado'));
+            res.fixedLey = parseFloat(gV('edit-fixed-ley'));
+            res.subTotal = res.consumption * res.price;
+            res.gastosFijos = res.fixedCargo + res.fixedAlumbrado + res.fixedLey + res.fixedAporte;
+        }
+
+        res.impuesto = res.subTotal * 0.18;
+        res.total = res.subTotal + res.impuesto + (service === 'agua' ? (res.fixedCargo + res.fixedAporte) : res.gastosFijos);
+
+        try {
+            this.showSpinner(true);
+            const { error } = await sb.from('receipts').upsert({
+                service, floor, year, month, data: res
+            }, { onConflict: 'service, floor, year, month' });
+
+            if (error) throw error;
+
+            this.data[service][floor][year][month] = res;
+            bootstrap.Modal.getInstance(document.getElementById('editReceiptModal')).hide();
+            this.generateReport();
+            this.updateDashboard();
+            this.showAlert('Cambios guardados.', 'success', 'report');
+        } catch (e) {
+            this.showAlert('Error al editar: ' + (e.message || 'Error desconocido'), 'danger', 'report');
+        } finally {
+            this.showSpinner(false);
         }
     },
 
