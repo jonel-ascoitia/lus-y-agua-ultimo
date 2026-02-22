@@ -4,417 +4,646 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Recibos - Luz y Agua</title>
+    <title>SUREC - Gestión de Recibos Profesional</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Tailwind CSS -->
-    <link href="https://cdn.tailwindcss.com/3.4.1" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4f46e5',
+                        secondary: '#10b981',
+                        accent: '#f59e0b',
+                        dark: '#1e1b4b'
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
-    <!-- Supabase -->
+
+    <!-- Core Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="config.js"></script>
-    <!-- Chart.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Export Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <script src="config.js"></script>
 </head>
 
-<body>
-    <div id="spinner" class="spinner" role="status" aria-live="polite">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Cargando...</span>
+<body class="bg-slate-50 font-sans text-slate-900 min-h-screen">
+    <!-- Overlay Spinner -->
+    <div id="spinner"
+        class="fixed inset-0 z-[9999] flex items-center justify-center bg-white/80 backdrop-blur-sm transition-opacity duration-300 pointer-events-none opacity-0">
+        <div class="flex flex-col items-center">
+            <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <p class="mt-4 text-primary font-medium animate-pulse">Cargando...</p>
         </div>
     </div>
 
-    <header class="py-8">
-        <div class="container mx-auto px-4">
-            <h1 class="text-4xl font-bold text-center">Recibos de luz y agua</h1>
-            <p class="text-lg mt-2 text-center">Recibos</p>
-            <div class="text-center mt-4">
-                <a href="#main-content" class="btn btn-light" aria-label="Comenzar a usar el sistema">Comience Ahora</a>
-                <button id="logout-btn" class="btn btn-danger ms-2" style="display: none;"
-                    onclick="RecibosSystem.logout()" aria-label="Cerrar sesión">Cerrar Sesión</button>
+    <!-- Navigation Bar -->
+    <header class="bg-dark text-white shadow-xl">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-primary p-2 rounded-lg shadow-lg rotate-3 hover:rotate-0 transition-transform">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight">SUREC</h1>
+                    <p class="text-[10px] uppercase tracking-[0.2em] text-primary-300 font-semibold opacity-70">
+                        Logística de Servicios</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <button id="logout-btn"
+                    class="hidden bg-white/10 hover:bg-red-500 text-white px-4 py-2 rounded-full text-sm font-medium transition-all group"
+                    onclick="RecibosSystem.logout()">
+                    <span class="flex items-center gap-2">
+                        Cerrar Sesión
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                    </span>
+                </button>
             </div>
         </div>
     </header>
 
-    <main class="container mx-auto mt-8" id="main-container" style="display: none;">
-        <!-- Dashboard -->
-        <section class="dashboard-card" aria-labelledby="dashboard-title">
-            <h2 id="dashboard-title" class="text-2xl font-semibold mb-4">Resumen General</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="p-6 bg-blue-50 rounded-lg" role="region" aria-label="Total Luz">
-                    <p class="font-semibold">Total Luz (S/)</p>
-                    <p id="total-luz" class="text-2xl font-bold text-blue-600">0.00</p>
+    <main class="container mx-auto px-4 py-8" id="main-container" style="display: none;">
+        <!-- Dashboard Summary -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div
+                class="stats-card bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4 group hover:border-primary/30 transition-all">
+                <div
+                    class="p-3 rounded-xl bg-blue-50 text-blue-600 group-hover:bg-primary group-hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
                 </div>
-                <div class="p-6 bg-green-50 rounded-lg" role="region" aria-label="Total Agua">
-                    <p class="font-semibold">Total Agua (S/)</p>
-                    <p id="total-agua" class="text-2xl font-bold text-green-600">0.00</p>
-                </div>
-                <div class="p-6 bg-purple-50 rounded-lg" role="region" aria-label="Pisos Activos">
-                    <p class="font-semibold">Pisos Activos</p>
-                    <p id="total-floors" class="text-2xl font-bold text-purple-600">0</p>
+                <div>
+                    <p class="text-sm text-slate-500 font-medium">Total Luz Histórico</p>
+                    <h3 class="text-2xl font-bold text-slate-800">S/ <span id="total-luz">0.00</span></h3>
                 </div>
             </div>
-        </section>
+            <div
+                class="stats-card bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4 group hover:border-secondary/30 transition-all">
+                <div
+                    class="p-3 rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-secondary group-hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm text-slate-500 font-medium">Total Agua Histórico</p>
+                    <h3 class="text-2xl font-bold text-slate-800">S/ <span id="total-agua">0.00</span></h3>
+                </div>
+            </div>
+            <div
+                class="stats-card bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4 group hover:border-accent/30 transition-all">
+                <div
+                    class="p-3 rounded-xl bg-amber-50 text-amber-600 group-hover:bg-accent group-hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm text-slate-500 font-medium">Gestión de Pisos</p>
+                    <h3 class="text-2xl font-bold text-slate-800"><span id="total-floors">0</span> <span
+                            class="text-sm font-normal text-slate-400">Pisos</span></h3>
+                </div>
+            </div>
+        </div>
 
-        <!-- Main Content -->
-        <section id="main-content" aria-label="Contenido principal">
-            <nav>
-                <ul class="nav nav-tabs" id="myTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="luz-tab" data-bs-toggle="tab" data-bs-target="#luz"
-                            type="button" role="tab" aria-controls="luz" aria-selected="true">Luz</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="agua-tab" data-bs-toggle="tab" data-bs-target="#agua" type="button"
-                            role="tab" aria-controls="agua" aria-selected="false">Agua</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="config-tab" data-bs-toggle="tab" data-bs-target="#config"
-                            type="button" role="tab" aria-controls="config" aria-selected="false">Configuración</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="report-tab" data-bs-toggle="tab" data-bs-target="#report"
-                            type="button" role="tab" aria-controls="report" aria-selected="false">Reportes</button>
-                    </li>
-                </ul>
+        <!-- Main Workspace -->
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+            <nav class="border-b border-slate-100 p-2">
+                <div class="flex gap-1" id="main-tabs" role="tablist">
+                    <button
+                        class="flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all hover:bg-slate-50 aria-selected:bg-primary aria-selected:text-white"
+                        id="luz-tab" data-bs-toggle="tab" data-bs-target="#luz" type="button" role="tab">Registro
+                        Luz</button>
+                    <button
+                        class="flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all hover:bg-slate-50 aria-selected:bg-secondary aria-selected:text-white"
+                        id="agua-tab" data-bs-toggle="tab" data-bs-target="#agua" type="button" role="tab">Registro
+                        Agua</button>
+                    <button
+                        class="flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all hover:bg-slate-50 aria-selected:bg-dark aria-selected:text-white"
+                        id="report-tab" data-bs-toggle="tab" data-bs-target="#report" type="button" role="tab">Reportes
+                        & Export</button>
+                    <button
+                        class="flex-2 py-3 px-4 rounded-xl text-sm font-semibold transition-all hover:bg-slate-50 aria-selected:bg-slate-800 aria-selected:text-white"
+                        id="config-tab" data-bs-toggle="tab" data-bs-target="#config" type="button"
+                        role="tab">Ajustes</button>
+                </div>
             </nav>
-            <div class="tab-content" id="myTabContent">
-                <!-- Sección Luz -->
-                <section class="tab-pane fade show active" id="luz" role="tabpanel" aria-labelledby="luz-tab">
-                    <h2 class="text-2xl font-semibold mt-3">Registro de Consumo de Luz</h2>
-                    <form id="luz-form" novalidate class="space-y-6">
-                        <div>
-                            <label for="luz-floor" class="form-label">Piso:</label>
-                            <select id="luz-floor" class="form-select" required aria-describedby="luz-floor-help">
-                                <option value="" disabled selected>Seleccione un piso</option>
-                            </select>
-                            <small id="luz-floor-help" class="form-text text-muted">Seleccione el piso para registrar el
-                                consumo.</small>
+
+            <div class="tab-content p-6 md:p-8">
+                <!-- Luz View -->
+                <div class="tab-pane fade show active" id="luz" role="tabpanel">
+                    <div class="max-w-4xl mx-auto">
+                        <div class="mb-6">
+                            <h2 class="text-2xl font-bold text-slate-800">Calcular Recibo de Luz</h2>
+                            <p class="text-slate-500">Ingrese los datos del medidor para generar el cálculo mensual.</p>
                         </div>
-                        <div>
-                            <label for="luz-year" class="form-label">Año:</label>
-                            <input type="number" id="luz-year" class="form-control" min="1900" max="9900" required
-                                aria-describedby="luz-year-help">
-                            <small id="luz-year-help" class="form-text text-muted">Ingrese el año del recibo.</small>
-                        </div>
-                        <div>
-                            <label for="luz-month" class="form-label">Mes:</label>
-                            <select id="luz-month" class="form-select" required aria-describedby="luz-month-help">
-                                <option value="" disabled selected>Seleccione un mes</option>
-                            </select>
-                            <small id="luz-month-help" class="form-text text-muted">Seleccione el mes del
-                                recibo.</small>
-                        </div>
-                        <div>
-                            <label for="luz-prev" class="form-label">Consumo Anterior (kWh):</label>
-                            <input type="number" id="luz-prev" class="form-control" step="any" required
-                                aria-describedby="luz-prev-help">
-                            <small id="luz-prev-help" class="form-text text-muted">Ingrese el consumo anterior en kWh
-                                (puede ser negativo para ajustes).</small>
-                        </div>
-                        <div>
-                            <label for="luz-curr" class="form-label">Consumo Actual (kWh):</label>
-                            <input type="number" id="luz-curr" class="form-control" step="any" required
-                                aria-describedby="luz-curr-help">
-                            <small id="luz-curr-help" class="form-text text-muted">Ingrese el consumo actual en kWh
-                                (puede ser negativo para ajustes).</small>
-                        </div>
-                        <div>
-                            <label for="luz-price" class="form-label">Precio por kWh (S/):</label>
-                            <input type="number" id="luz-price" class="form-control" step="any" required
-                                aria-describedby="luz-price-help">
-                            <small id="luz-price-help" class="form-text text-muted">Ingrese el precio por kWh en
-                                soles.</small>
-                        </div>
-                        <div>
-                            <label for="luz-fixed-cargo" class="form-label">Cargo Fijo (S/):</label>
-                            <input type="number" id="luz-fixed-cargo" class="form-control" step="any"
-                                aria-describedby="luz-fixed-cargo-help">
-                            <small id="luz-fixed-cargo-help" class="form-text text-muted">Ingrese el cargo fijo en soles
-                                (opcional).</small>
-                        </div>
-                        <div>
-                            <label for="luz-fixed-alumbrado" class="form-label">Alumbrado Público (S/):</label>
-                            <input type="number" id="luz-fixed-alumbrado" class="form-control" step="any"
-                                aria-describedby="luz-fixed-alumbrado-help">
-                            <small id="luz-fixed-alumbrado-help" class="form-text text-muted">Ingrese el costo de
-                                alumbrado público (opcional).</small>
-                        </div>
-                        <div>
-                            <label for="luz-fixed-ley" class="form-label">Aporte a Ley (S/):</label>
-                            <input type="number" id="luz-fixed-ley" class="form-control" step="any"
-                                aria-describedby="luz-fixed-ley-help">
-                            <small id="luz-fixed-ley-help" class="form-text text-muted">Ingrese el aporte a ley en soles
-                                (opcional).</small>
-                        </div>
-                        <div>
-                            <label for="luz-fixed-aporte" class="form-label">Interés/Mora (S/):</label>
-                            <input type="number" id="luz-fixed-aporte" class="form-control" step="any"
-                                aria-describedby="luz-fixed-aporte-help">
-                            <small id="luz-fixed-aporte-help" class="form-text text-muted">Ingrese el interés o mora en
-                                soles (opcional).</small>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-full"
-                            aria-label="Calcular y guardar recibo de luz">Calcular y Guardar</button>
-                    </form>
-                    <div id="luz-result" class="result" role="region" aria-live="polite"></div>
-                </section>
-                <!-- Sección Agua -->
-                <section class="tab-pane fade" id="agua" role="tabpanel" aria-labelledby="agua-tab">
-                    <h2 class="text-2xl font-semibold mt-3">Registro de Consumo de Agua</h2>
-                    <form id="agua-form" novalidate class="space-y-6">
-                        <div>
-                            <label for="agua-floor" class="form-label">Piso:</label>
-                            <select id="agua-floor" class="form-select" required aria-describedby="agua-floor-help">
-                                <option value="" disabled selected>Seleccione un piso</option>
-                            </select>
-                            <small id="agua-floor-help" class="form-text text-muted">Seleccione el piso para registrar
-                                el consumo.</small>
-                        </div>
-                        <div>
-                            <label for="agua-year" class="form-label">Año:</label>
-                            <input type="number" id="agua-year" class="form-control" min="1900" max="9900" required
-                                aria-describedby="agua-year-help">
-                            <small id="agua-year-help" class="form-text text-muted">Ingrese el año del recibo.</small>
-                        </div>
-                        <div>
-                            <label for="agua-month" class="form-label">Mes:</label>
-                            <select id="agua-month" class="form-select" required aria-describedby="agua-month-help">
-                                <option value="" disabled selected>Seleccione un mes</option>
-                            </select>
-                            <small id="agua-month-help" class="form-text text-muted">Seleccione el mes del
-                                recibo.</small>
-                        </div>
-                        <div>
-                            <label for="agua-prev" class="form-label">Consumo Anterior (m³):</label>
-                            <input type="number" id="agua-prev" class="form-control" step="any" required
-                                aria-describedby="agua-prev-help">
-                            <small id="agua-prev-help" class="form-text text-muted">Ingrese el consumo anterior en m³
-                                (puede ser negativo para ajustes).</small>
-                        </div>
-                        <div>
-                            <label for="agua-curr" class="form-label">Consumo Actual (m³):</label>
-                            <input type="number" id="agua-curr" class="form-control" step="any" required
-                                aria-describedby="agua-curr-help">
-                            <small id="agua-curr-help" class="form-text text-muted">Ingrese el consumo actual en m³
-                                (puede ser negativo para ajustes).</small>
-                        </div>
-                        <div>
-                            <label for="agua-price" class="form-label">Precio por m³ - Agua (S/):</label>
-                            <input type="number" id="agua-price" class="form-control" step="any" required
-                                aria-describedby="agua-price-help">
-                            <small id="agua-price-help" class="form-text text-muted">Ingrese el precio por m³ de agua en
-                                soles.</small>
-                        </div>
-                        <div>
-                            <label for="agua-sewerage" class="form-label">Precio por m³ - Alcantarillado (S/):</label>
-                            <input type="number" id="agua-sewerage" class="form-control" step="any" required
-                                aria-describedby="agua-sewerage-help">
-                            <small id="agua-sewerage-help" class="form-text text-muted">Ingrese el precio por m³ de
-                                alcantarillado en soles.</small>
-                        </div>
-                        <div>
-                            <label for="agua-fixed-cargo" class="form-label">Gastos Fijos (S/):</label>
-                            <input type="number" id="agua-fixed-cargo" class="form-control" step="any"
-                                aria-describedby="agua-fixed-cargo-help">
-                            <small id="agua-fixed-cargo-help" class="form-text text-muted">Ingrese los gastos fijos en
-                                soles (opcional).</small>
-                        </div>
-                        <div>
-                            <label for="agua-fixed-aporte" class="form-label">Interés/Mora (S/):</label>
-                            <input type="number" id="agua-fixed-aporte" class="form-control" step="any"
-                                aria-describedby="agua-fixed-aporte-help">
-                            <small id="agua-fixed-aporte-help" class="form-text text-muted">Ingrese el interés o mora en
-                                soles (opcional).</small>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-full"
-                            aria-label="Calcular y guardar recibo de agua">Calcular y Guardar</button>
-                    </form>
-                    <div id="agua-result" class="result" role="region" aria-live="polite"></div>
-                </section>
-                <!-- Configuración -->
-                <section class="tab-pane fade" id="config" role="tabpanel" aria-labelledby="config-tab">
-                    <h2 class="text-2xl font-semibold mt-3">Configuración</h2>
-                    <div class="mb-6">
-                        <label for="new-floor" class="form-label">Agregar Nuevo Piso:</label>
-                        <input type="text" id="new-floor" class="form-control" placeholder="Ej: Piso 4" required
-                            aria-describedby="new-floor-help">
-                        <small id="new-floor-help" class="form-text text-muted">Ingrese el nombre del nuevo
-                            piso.</small>
-                        <button type="button" class="btn btn-success mt-2 w-full"
-                            onclick="RecibosSystem.promptPassword('addFloor')"
-                            aria-label="Agregar nuevo piso">Agregar</button>
+                        <form id="luz-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-1">Piso / Cliente</label>
+                                    <select id="luz-floor"
+                                        class="w-full rounded-xl border-slate-200 focus:ring-primary focus:border-primary py-3"
+                                        required></select>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-1">Año</label>
+                                        <input type="number" id="luz-year" class="w-full rounded-xl border-slate-200"
+                                            required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-1">Mes</label>
+                                        <select id="luz-month" class="w-full rounded-xl border-slate-200"
+                                            required></select>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100">
+                                    <div>
+                                        <label class="block text-sm font-bold text-blue-700 mb-1">Lectura
+                                            Anterior</label>
+                                        <input type="number" id="luz-prev" step="any"
+                                            class="w-full rounded-xl border-blue-200 bg-blue-50/30" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-blue-700 mb-1">Lectura Actual</label>
+                                        <input type="number" id="luz-curr" step="any"
+                                            class="w-full rounded-xl border-blue-200 bg-blue-50/30" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                                <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Costos Fijos
+                                    del Recibo</h4>
+                                <div class="grid grid-cols-2 gap-x-4 gap-y-3">
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-slate-500 uppercase">Precio Unit
+                                            (S/)</label>
+                                        <input type="number" id="luz-price" value="0.75" step="any"
+                                            class="w-full rounded-lg border-slate-200 text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-slate-500 uppercase">Cargo
+                                            Fijo</label>
+                                        <input type="number" id="luz-fixed-cargo" value="5.80" step="any"
+                                            class="w-full rounded-lg border-slate-200 text-sm">
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="block text-[10px] font-bold text-slate-500 uppercase">Alumbrado</label>
+                                        <input type="number" id="luz-fixed-alumbrado" value="8.50" step="any"
+                                            class="w-full rounded-lg border-slate-200 text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-slate-500 uppercase">Aporte
+                                            Ley</label>
+                                        <input type="number" id="luz-fixed-ley" value="0.10" step="any"
+                                            class="w-full rounded-lg border-slate-200 text-sm">
+                                    </div>
+                                </div>
+                                <div class="mt-4 pt-4 border-t border-slate-200">
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Interés / Mora
+                                        / Otros</label>
+                                    <input type="number" id="luz-fixed-aporte" value="0.00" step="any"
+                                        class="w-full rounded-lg border-slate-200">
+                                </div>
+                            </div>
+                            <div class="md:col-span-2">
+                                <button type="submit"
+                                    class="w-full bg-primary hover:bg-dark text-white font-bold py-4 rounded-2xl shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-3 active:scale-95">
+                                    Simular y Guardar Registro
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                    <h3 class="text-lg font-semibold">Pisos Actuales:</h3>
-                    <ul id="floor-list" class="list-group" aria-label="Lista de pisos actuales"></ul>
-                    <div class="mt-6 space-y-3">
-                        <button type="button" class="btn btn-warning w-full"
-                            onclick="RecibosSystem.promptChangeUsername()"
-                            aria-label="Cambiar nombre de usuario">Cambiar Usuario</button>
-                        <button type="button" class="btn btn-warning w-full"
-                            onclick="RecibosSystem.promptChangePassword()" aria-label="Cambiar contraseña">Cambiar
-                            Contraseña</button>
-                    </div>
-                </section>
-                <!-- Reportes -->
-                <section class="tab-pane fade" id="report" role="tabpanel" aria-labelledby="report-tab">
-                    <h2 class="text-2xl font-semibold mt-3">Reportes</h2>
-                    <form id="report-form" novalidate class="space-y-6">
-                        <div>
-                            <label for="report-service" class="form-label">Servicio:</label>
-                            <select id="report-service" class="form-select" required
-                                aria-describedby="report-service-help">
-                                <option value="luz">Luz</option>
-                                <option value="agua">Agua</option>
-                            </select>
-                            <small id="report-service-help" class="form-text text-muted">Seleccione el servicio para el
-                                reporte.</small>
+                </div>
+
+                <!-- Agua View (Similiar structure to Light but with water fields) -->
+                <div class="tab-pane fade" id="agua" role="tabpanel">
+                    <div class="max-w-4xl mx-auto">
+                        <div class="mb-6">
+                            <h2 class="text-2xl font-bold text-slate-800 text-secondary">Calcular Recibo de Agua</h2>
+                            <p class="text-slate-500">Ingrese las m3 del medidor correspondientes al periodo.</p>
                         </div>
-                        <div>
-                            <label for="report-floor" class="form-label">Piso (o Todos):</label>
-                            <select id="report-floor" class="form-select" aria-describedby="report-floor-help">
-                                <option value="">Todos los Pisos</option>
-                            </select>
-                            <small id="report-floor-help" class="form-text text-muted">Seleccione un piso o todos para
-                                el reporte.</small>
-                        </div>
-                        <div>
-                            <label for="report-year" class="form-label">Año (vacío para todos):</label>
-                            <input type="number" id="report-year" class="form-control" min="1900" max="9900"
-                                placeholder="Ej: 2025" aria-describedby="report-year-help">
-                            <small id="report-year-help" class="form-text text-muted">Ingrese el año o déjelo vacío para
-                                todos.</small>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-full" aria-label="Generar reporte">Generar
-                            Reporte</button>
-                    </form>
-                    <div id="report-result" class="report-result" role="region" aria-live="polite"></div>
-                    <div class="chart-container">
-                        <canvas id="consumption-chart" aria-label="Gráfico de consumo"></canvas>
+                        <form id="agua-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-bold text-slate-700 mb-1">Piso / Cliente</label>
+                                    <select id="agua-floor"
+                                        class="w-full rounded-xl border-slate-200 focus:ring-secondary focus:border-secondary py-3"
+                                        required></select>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-1">Año</label>
+                                        <input type="number" id="agua-year" class="w-full rounded-xl border-slate-200"
+                                            required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-slate-700 mb-1">Mes</label>
+                                        <select id="agua-month" class="w-full rounded-xl border-slate-200"
+                                            required></select>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100">
+                                    <div>
+                                        <label class="block text-sm font-bold text-emerald-700 mb-1">Lectura Anterior
+                                            (m³)</label>
+                                        <input type="number" id="agua-prev" step="any"
+                                            class="w-full rounded-xl border-emerald-200 bg-emerald-50/30" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-bold text-emerald-700 mb-1">Lectura Actual
+                                            (m³)</label>
+                                        <input type="number" id="agua-curr" step="any"
+                                            class="w-full rounded-xl border-emerald-200 bg-emerald-50/30" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-4 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                                <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Parámetros
+                                    de Costo de Agua</h4>
+                                <div class="grid grid-cols-1 gap-3">
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-slate-500 uppercase">Tarifa Agua
+                                            (S/ m³)</label>
+                                        <input type="number" id="agua-price" value="2.10" step="any"
+                                            class="w-full rounded-lg border-slate-200 text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-slate-500 uppercase">Tarifa
+                                            Alcantarillado (S/ m³)</label>
+                                        <input type="number" id="agua-sewerage" value="1.05" step="any"
+                                            class="w-full rounded-lg border-slate-200 text-sm">
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3 pt-2">
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-slate-500 uppercase">Gastos
+                                            Fijos</label>
+                                        <input type="number" id="agua-fixed-cargo" value="6.50" step="any"
+                                            class="w-full rounded-lg border-slate-200 text-sm">
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="block text-[10px] font-bold text-slate-500 uppercase">Mora/Interés</label>
+                                        <input type="number" id="agua-fixed-aporte" value="0.00" step="any"
+                                            class="w-full rounded-lg border-slate-200 text-sm">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="md:col-span-2">
+                                <button type="submit"
+                                    class="w-full bg-secondary hover:bg-dark text-white font-bold py-4 rounded-2xl shadow-lg shadow-emerald-200 transition-all flex items-center justify-center gap-3 active:scale-95">
+                                    Registrar Lectura de Agua
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.642.321a2 2 0 01-1.584 0l-.642-.321a6 6 0 00-3.86-.517l-2.387.477a2 2 0 00-1.022.547l-.34.34a2 2 0 000 2.829l1.245 1.245a2 2 0 002.829 0l.143-.143a2 2 0 011.232-.57l3.357-.42a2 2 0 001.032-.54l.523-.523a2 2 0 000-2.828l-.341-.341z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="mt-6 flex flex-wrap gap-3">
-                        <button type="button" class="btn btn-secondary flex-1" onclick="RecibosSystem.exportToPDF()"
-                            aria-label="Exportar reporte a PDF">Exportar a PDF</button>
-                        <button type="button" class="btn btn-secondary flex-1" onclick="RecibosSystem.exportToWord()"
-                            aria-label="Exportar reporte a Word">Exportar a Word</button>
-                        <button type="button" class="btn btn-secondary flex-1" onclick="RecibosSystem.exportToExcel()"
-                            aria-label="Exportar reporte a Excel">Exportar a Excel</button>
+                </div>
+
+                <!-- Reports View -->
+                <div class="tab-pane fade" id="report" role="tabpanel">
+                    <div class="flex flex-col lg:flex-row gap-8">
+                        <!-- Filters -->
+                        <div class="lg:w-1/3">
+                            <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 sticky top-4">
+                                <h3 class="text-xl font-bold text-slate-800 mb-4">Generar Reporte</h3>
+                                <form id="report-form" class="space-y-4">
+                                    <div>
+                                        <label
+                                            class="block text-xs font-bold text-slate-500 uppercase mb-1">Servicio</label>
+                                        <select id="report-service" class="w-full rounded-xl border-slate-200">
+                                            <option value="luz">Energía Eléctrica (Luz)</option>
+                                            <option value="agua">Servicio de Agua</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Filtrar por
+                                            Piso</label>
+                                        <select id="report-floor" class="w-full rounded-xl border-slate-200">
+                                            <option value="">Todos los registros</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Año</label>
+                                        <input type="number" id="report-year" placeholder="Todos"
+                                            class="w-full rounded-xl border-slate-200">
+                                    </div>
+                                    <button type="submit"
+                                        class="w-full bg-dark text-white font-bold py-3 rounded-xl mt-4 border-2 border-dark hover:bg-transparent hover:text-dark transition-all">
+                                        Filtrar Datos
+                                    </button>
+                                </form>
+
+                                <div class="mt-8 pt-8 border-t border-slate-200 space-y-3">
+                                    <h4 class="text-xs font-black text-slate-400 uppercase tracking-tighter mb-4">
+                                        Opciones de Exportación</h4>
+                                    <button onclick="RecibosSystem.exportToPDF()"
+                                        class="w-full bg-white text-slate-700 border border-slate-200 flex items-center justify-between px-4 py-3 rounded-xl hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition-all group">
+                                        <span class="flex items-center gap-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-red-500"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path
+                                                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            Documento PDF
+                                        </span>
+                                        <span
+                                            class="text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">DESCARGAR</span>
+                                    </button>
+                                    <button onclick="RecibosSystem.exportToExcel()"
+                                        class="w-full bg-white text-slate-700 border border-slate-200 flex items-center justify-between px-4 py-3 rounded-xl hover:bg-emerald-50 hover:border-emerald-200 hover:text-emerald-700 transition-all group">
+                                        <span class="flex items-center gap-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-emerald-500"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path
+                                                    d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            Hoja de Excel (.xlsx)
+                                        </span>
+                                        <span
+                                            class="text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">DESCARGAR</span>
+                                    </button>
+                                    <button onclick="RecibosSystem.exportToWord()"
+                                        class="w-full bg-white text-slate-700 border border-slate-200 flex items-center justify-between px-4 py-3 rounded-xl hover:bg-blue-50 border-sky-200 text-sky-700 transition-all group">
+                                        <span class="flex items-center gap-3">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500"
+                                                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path
+                                                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                            </svg>
+                                            Documento Word
+                                        </span>
+                                        <span
+                                            class="text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity">DESCARGAR</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Results -->
+                        <div class="lg:w-2/3 space-y-8">
+                            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                                <canvas id="consumption-chart" class="max-h-[300px]"></canvas>
+                            </div>
+                            <div id="report-result" class="overflow-x-auto">
+                                <p class="text-center py-20 text-slate-400 italic font-light">Use los filtros de la
+                                    izquierda para visualizar los datos.</p>
+                            </div>
+                        </div>
                     </div>
-                </section>
+                </div>
+
+                <!-- Config View -->
+                <div class="tab-pane fade" id="config" role="tabpanel">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
+                        <!-- Floors Admin -->
+                        <div class="space-y-6">
+                            <h3 class="text-xl font-bold text-slate-800">Administración de Pisos</h3>
+                            <div class="flex gap-2">
+                                <input type="text" id="new-floor" placeholder="Identificador del piso"
+                                    class="flex-1 rounded-xl border-slate-200">
+                                <button onclick="RecibosSystem.promptPassword('addFloor')"
+                                    class="bg-primary text-white px-6 rounded-xl font-bold hover:bg-dark transition-colors">Añadir</button>
+                            </div>
+                            <div class="bg-slate-50 rounded-2xl p-2 border border-slate-100 max-h-[300px] overflow-y-auto"
+                                id="floor-list">
+                                <!-- List populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Access Control -->
+                        <div class="space-y-6">
+                            <h3 class="text-xl font-bold text-slate-800">Seguridad y Acceso</h3>
+                            <div class="bg-slate-50 rounded-2xl p-6 border border-slate-100 space-y-4">
+                                <div
+                                    class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+                                    <div>
+                                        <p class="text-xs font-bold text-slate-400 uppercase">Usuario actual</p>
+                                        <p class="font-bold text-slate-700" id="current-username-display">Cargando...
+                                        </p>
+                                    </div>
+                                    <button onclick="RecibosSystem.promptChangeUsername()"
+                                        class="text-primary font-bold text-sm hover:underline">Cambiar</button>
+                                </div>
+                                <button onclick="RecibosSystem.promptChangePassword()"
+                                    class="w-full flex items-center justify-between p-4 bg-white rounded-xl shadow-sm border border-slate-100 hover:border-primary transition-all group">
+                                    <span class="font-bold text-slate-700">Actualizar Contraseña</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="w-4 h-4 text-slate-400 group-hover:text-primary" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path
+                                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </section>
+        </div>
     </main>
 
-    <!-- Modal para Editar Recibo -->
-    <div class="modal fade" id="editReceiptModal" tabindex="-1" aria-labelledby="editReceiptModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editReceiptModalLabel">Editar Recibo</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Cerrar modal de edición"></button>
+    <!-- Modals (Refined) -->
+    <!-- Password Prompt -->
+    <div class="modal fade" id="passwordModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-3xl shadow-2xl overflow-hidden">
+                <div class="p-8 text-center bg-slate-50 border-b border-slate-100">
+                    <div
+                        class="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                    </div>
+                    <h5 class="text-xl font-bold text-slate-800">Confirmación de Acción</h5>
+                    <p class="text-slate-500 text-sm">Ingrese su clave maestra para continuar.</p>
                 </div>
-                <div class="modal-body">
-                    <form id="edit-receipt-form" novalidate class="space-y-6">
+                <div class="p-8">
+                    <form id="password-form" class="space-y-4">
+                        <input type="password" id="password-input"
+                            class="w-full rounded-2xl border-slate-200 py-4 text-center text-2xl font-black focus:ring-primary focus:border-primary"
+                            placeholder="••••" required>
+                        <button type="submit"
+                            class="w-full bg-primary text-white py-4 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">Autorizar
+                            Operación</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal (Full Screen Style) -->
+    <div class="modal fade" id="loginModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content border-0 bg-dark text-white">
+                <div class="flex flex-col md:flex-row h-full">
+                    <div class="md:w-1/2 p-12 md:p-24 flex flex-col justify-center bg-dark">
+                        <div class="mb-12">
+                            <span class="text-primary font-bold tracking-widest uppercase text-xs">Bienvenido al Panel
+                                de Control</span>
+                            <h1 class="text-6xl font-black mt-2">SUREC.</h1>
+                            <p class="text-slate-400 mt-4 max-w-sm">Acceda al sistema de gestión de recibos para
+                                controlar consumos y generar reportes financieros.</p>
+                        </div>
+                        <form id="login-form" class="max-w-md space-y-6">
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold uppercase tracking-widest text-slate-500">Usuario
+                                    Administrador</label>
+                                <input type="text" id="username-input"
+                                    class="w-full border-0 border-b-2 border-slate-700 bg-transparent py-4 text-xl focus:ring-0 focus:border-primary transition-all"
+                                    placeholder="admin" required>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs font-bold uppercase tracking-widest text-slate-500">Contraseña
+                                    Maestra</label>
+                                <input type="password" id="login-password-input"
+                                    class="w-full border-0 border-b-2 border-slate-700 bg-transparent py-4 text-xl focus:ring-0 focus:border-primary transition-all"
+                                    placeholder="••••" required>
+                            </div>
+                            <button type="submit"
+                                class="w-full bg-primary hover:bg-white hover:text-dark text-white font-black py-5 rounded-2xl text-lg shadow-2xl shadow-primary/20 transition-all flex items-center justify-center gap-4 group">
+                                Iniciar Sesión del Panel
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    class="w-5 h-5 group-hover:translate-x-2 transition-transform" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </button>
+                            <div class="pt-4 flex justify-between">
+                                <button type="button" class="text-slate-500 hover:text-white transition-colors text-sm"
+                                    onclick="RecibosSystem.showForgotPasswordModal()">¿Olvido su Clave?</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div
+                        class="hidden md:block md:w-1/2 relative bg-gradient-to-tr from-primary to-indigo-900 overflow-hidden">
+                        <div class="absolute inset-0 bg-black/20"></div>
+                        <div
+                            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] aspect-square bg-white/10 rounded-full blur-3xl animate-pulse">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Receipt Modal -->
+    <div class="modal fade" id="editReceiptModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 rounded-3xl shadow-2xl overflow-hidden">
+                <div class="bg-primary p-6 text-white flex justify-between items-center">
+                    <h5 class="text-xl font-bold">Ajuste de Registro</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="p-8">
+                    <form id="edit-receipt-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <input type="hidden" id="edit-service">
                         <input type="hidden" id="edit-floor">
                         <input type="hidden" id="edit-year">
                         <input type="hidden" id="edit-month">
-                        <div>
-                            <label for="edit-prev" class="form-label">Consumo Anterior:</label>
-                            <input type="number" id="edit-prev" class="form-control" step="any" required
-                                aria-describedby="edit-prev-help">
-                            <small id="edit-prev-help" class="form-text text-muted">Ingrese el consumo anterior (puede
-                                ser negativo).</small>
-                        </div>
-                        <div>
-                            <label for="edit-curr" class="form-label">Consumo Actual:</label>
-                            <input type="number" id="edit-curr" class="form-control" step="any" required
-                                aria-describedby="edit-curr-help">
-                            <small id="edit-curr-help" class="form-text text-muted">Ingrese el consumo actual (puede ser
-                                negativo).</small>
-                        </div>
-                        <div>
-                            <label for="edit-price" class="form-label">Precio por unidad (S/):</label>
-                            <input type="number" id="edit-price" class="form-control" step="any" required
-                                aria-describedby="edit-price-help">
-                            <small id="edit-price-help" class="form-text text-muted">Ingrese el precio por unidad en
-                                soles.</small>
-                        </div>
-                        <div id="edit-sewerage-container">
-                            <label for="edit-sewerage" class="form-label">Precio por m³ - Alcantarillado (S/):</label>
-                            <input type="number" id="edit-sewerage" class="form-control" step="any"
-                                aria-describedby="edit-sewerage-help">
-                            <small id="edit-sewerage-help" class="form-text text-muted">Ingrese el precio por m³ de
-                                alcantarillado (solo para agua).</small>
-                        </div>
-                        <div id="edit-fixed-cargo-container">
-                            <label for="edit-fixed-cargo" class="form-label">Gastos Fijos (S/):</label>
-                            <input type="number" id="edit-fixed-cargo" class="form-control" step="any"
-                                aria-describedby="edit-fixed-cargo-help">
-                            <small id="edit-fixed-cargo-help" class="form-text text-muted">Ingrese los gastos fijos en
-                                soles (opcional).</small>
-                        </div>
-                        <div id="edit-fixed-alumbrado-container" style="display: none;">
-                            <label for="edit-fixed-alumbrado" class="form-label">Alumbrado Público (S/):</label>
-                            <input type="number" id="edit-fixed-alumbrado" class="form-control" step="any"
-                                aria-describedby="edit-fixed-alumbrado-help">
-                            <small id="edit-fixed-alumbrado-help" class="form-text text-muted">Ingrese el costo de
-                                alumbrado público (opcional, solo para luz).</small>
-                        </div>
-                        <div id="edit-fixed-ley-container" style="display: none;">
-                            <label for="edit-fixed-ley" class="form-label">Aporte a Ley (S/):</label>
-                            <input type="number" id="edit-fixed-ley" class="form-control" step="any"
-                                aria-describedby="edit-fixed-ley-help">
-                            <small id="edit-fixed-ley-help" class="form-text text-muted">Ingrese el aporte a ley en
-                                soles (opcional, solo para luz).</small>
-                        </div>
-                        <div id="edit-fixed-aporte-container">
-                            <label for="edit-fixed-aporte" class="form-label">Interés/Mora (S/):</label>
-                            <input type="number" id="edit-fixed-aporte" class="form-control" step="any"
-                                aria-describedby="edit-fixed-aporte-help">
-                            <small id="edit-fixed-aporte-help" class="form-text text-muted">Ingrese el interés o mora en
-                                soles (opcional).</small>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-full"
-                            aria-label="Guardar cambios en el recibo">Guardar Cambios</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- Modal para Contraseña (para acciones) -->
-    <div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content rounded-lg shadow-lg">
-                <div class="modal-header bg-blue-50 border-b border-gray-200">
-                    <h5 class="modal-title text-lg font-semibold text-blue-800" id="passwordModalLabel">Ingresar
-                        Contraseña</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Cerrar modal de contraseña"></button>
-                </div>
-                <div class="modal-body p-6">
-                    <form id="password-form" novalidate class="space-y-6">
-                        <div>
-                            <label for="password-input" class="form-label">Contraseña:</label>
-                            <input type="password" id="password-input" class="form-control w-full" required
-                                aria-describedby="password-input-help">
-                            <small id="password-input-help" class="form-text text-muted">Ingrese su contraseña para
-                                confirmar la acción.</small>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-xs font-bold text-slate-500 uppercase">Lectura Anterior</label>
+                                <input type="number" id="edit-prev" step="any"
+                                    class="w-full rounded-xl border-slate-200">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-slate-500 uppercase">Lectura Actual</label>
+                                <input type="number" id="edit-curr" step="any"
+                                    class="w-full rounded-xl border-slate-200">
+                            </div>
                         </div>
-                        <div class="flex gap-3">
-                            <button type="submit" class="btn btn-primary w-full"
-                                aria-label="Confirmar contraseña">Confirmar</button>
-                            <button type="button" class="btn btn-secondary w-full" data-bs-dismiss="modal"
-                                aria-label="Cancelar acción">Cancelar</button>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-xs font-bold text-slate-500 uppercase">Costo por Unidad (S/)</label>
+                                <input type="number" id="edit-price" step="any"
+                                    class="w-full rounded-xl border-slate-200">
+                            </div>
+                            <div id="edit-sewerage-container">
+                                <label class="text-xs font-bold text-slate-500 uppercase">Costo Alcantarillado
+                                    (m³)</label>
+                                <input type="number" id="edit-sewerage" step="any"
+                                    class="w-full rounded-xl border-slate-200">
+                            </div>
+                            <div id="edit-fixed-alumbrado-container">
+                                <label class="text-xs font-bold text-slate-500 uppercase">Alumbrado Público (S/)</label>
+                                <input type="number" id="edit-fixed-alumbrado" step="any"
+                                    class="w-full rounded-xl border-slate-200">
+                            </div>
+                        </div>
+                        <div
+                            class="md:col-span-2 grid grid-cols-3 gap-4 border-t pt-6 bg-slate-50 -mx-8 -mb-8 px-8 py-8 mt-2">
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase">Gasto Fijo</label>
+                                <input type="number" id="edit-fixed-cargo" step="any"
+                                    class="w-full rounded-lg border-slate-200 text-sm">
+                            </div>
+                            <div id="edit-fixed-ley-container">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase">Ley</label>
+                                <input type="number" id="edit-fixed-ley" step="any"
+                                    class="w-full rounded-lg border-slate-200 text-sm">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase">Interés/Mora</label>
+                                <input type="number" id="edit-fixed-aporte" step="any"
+                                    class="w-full rounded-lg border-slate-200 text-sm">
+                            </div>
+                            <button type="submit"
+                                class="col-span-3 bg-primary text-white py-4 rounded-xl font-bold mt-4 shadow-lg shadow-primary/20">Aplicar
+                                Cambios</button>
                         </div>
                     </form>
                 </div>
@@ -422,174 +651,7 @@
         </div>
     </div>
 
-    <!-- Modal para Login -->
-    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content rounded-lg shadow-lg">
-                <div class="modal-header bg-blue-50 border-b border-gray-200">
-                    <h5 class="modal-title text-lg font-semibold text-blue-800" id="loginModalLabel">Iniciar Sesión</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Cerrar modal de inicio de sesión"></button>
-                </div>
-                <div class="modal-body p-6">
-                    <form id="login-form" novalidate class="space-y-6">
-                        <div>
-                            <label for="username-input" class="form-label">Usuario:</label>
-                            <input type="text" id="username-input" class="form-control w-full" required
-                                aria-describedby="username-input-help">
-                            <small id="username-input-help" class="form-text text-muted">Ingrese su nombre de
-                                usuario.</small>
-                        </div>
-                        <div>
-                            <label for="login-password-input" class="form-label">Contraseña:</label>
-                            <input type="password" id="login-password-input" class="form-control w-full" required
-                                aria-describedby="login-password-input-help">
-                            <small id="login-password-input-help" class="form-text text-muted">Ingrese su
-                                contraseña.</small>
-                        </div>
-                        <div class="flex gap-3">
-                            <button type="submit" class="btn btn-primary w-full" aria-label="Iniciar sesión">Iniciar
-                                Sesión</button>
-                            <button type="button" class="btn btn-secondary w-full" data-bs-dismiss="modal"
-                                aria-label="Cancelar inicio de sesión">Cancelar</button>
-                        </div>
-                        <a href="#" class="text-blue-600 hover:underline"
-                            onclick="RecibosSystem.showForgotPasswordModal()"
-                            aria-label="Recuperar contraseña">¿Olvidaste tu contraseña?</a>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para Recuperar Contraseña -->
-    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content rounded-lg shadow-lg">
-                <div class="modal-header bg-blue-50 border-b border-gray-200">
-                    <h5 class="modal-title text-lg font-semibold text-blue-800" id="forgotPasswordModalLabel">Recuperar
-                        Contraseña</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Cerrar modal de recuperación de contraseña"></button>
-                </div>
-                <div class="modal-body p-6">
-                    <form id="forgot-password-form" novalidate class="space-y-6">
-                        <div>
-                            <label for="phone-input" class="form-label">Número de Celular:</label>
-                            <input type="text" id="phone-input" class="form-control w-full" required
-                                aria-describedby="phone-input-help">
-                            <small id="phone-input-help" class="form-text text-muted">Ingrese su número de celular
-                                registrado.</small>
-                        </div>
-                        <div class="flex gap-3">
-                            <button type="submit" class="btn btn-primary w-full"
-                                aria-label="Verificar número de celular">Verificar</button>
-                            <button type="button" class="btn btn-secondary w-full" data-bs-dismiss="modal"
-                                aria-label="Cancelar recuperación de contraseña">Cancelar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para Cambiar Contraseña -->
-    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content rounded-lg shadow-lg">
-                <div class="modal-header bg-blue-50 border-b border-gray-200">
-                    <h5 class="modal-title text-lg font-semibold text-blue-800" id="changePasswordModalLabel">Cambiar
-                        Contraseña</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Cerrar modal de cambio de contraseña"></button>
-                </div>
-                <div class="modal-body p-6">
-                    <form id="change-password-form" novalidate class="space-y-6">
-                        <div id="current-password-div">
-                            <label for="current-password-input" class="form-label">Contraseña Actual:</label>
-                            <input type="password" id="current-password-input" class="form-control w-full" required
-                                aria-describedby="current-password-input-help">
-                            <small id="current-password-input-help" class="form-text text-muted">Ingrese su contraseña
-                                actual.</small>
-                        </div>
-                        <div>
-                            <label for="new-password-input" class="form-label">Nueva Contraseña:</label>
-                            <input type="password" id="new-password-input" class="form-control w-full" required
-                                aria-describedby="new-password-input-help">
-                            <small id="new-password-input-help" class="form-text text-muted">Ingrese la nueva
-                                contraseña.</small>
-                        </div>
-                        <div>
-                            <label for="confirm-new-password-input" class="form-label">Confirmar Nueva
-                                Contraseña:</label>
-                            <input type="password" id="confirm-new-password-input" class="form-control w-full" required
-                                aria-describedby="confirm-new-password-input-help">
-                            <small id="confirm-new-password-input-help" class="form-text text-muted">Confirme la nueva
-                                contraseña.</small>
-                        </div>
-                        <div class="flex gap-3">
-                            <button type="submit" class="btn btn-primary w-full"
-                                aria-label="Cambiar contraseña">Cambiar</button>
-                            <button type="button" class="btn btn-secondary w-full" data-bs-dismiss="modal"
-                                aria-label="Cancelar cambio de contraseña">Cancelar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para Cambiar Usuario -->
-    <div class="modal fade" id="changeUsernameModal" tabindex="-1" aria-labelledby="changeUsernameModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content rounded-lg shadow-lg">
-                <div class="modal-header bg-blue-50 border-b border-gray-200">
-                    <h5 class="modal-title text-lg font-semibold text-blue-800" id="changeUsernameModalLabel">Cambiar
-                        Usuario</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                        aria-label="Cerrar modal de cambio de usuario"></button>
-                </div>
-                <div class="modal-body p-6">
-                    <form id="change-username-form" novalidate class="space-y-6">
-                        <div>
-                            <label for="current-password-for-username" class="form-label">Contraseña Actual:</label>
-                            <input type="password" id="current-password-for-username" class="form-control w-full"
-                                required aria-describedby="current-password-for-username-help">
-                            <small id="current-password-for-username-help" class="form-text text-muted">Ingrese su
-                                contraseña actual.</small>
-                        </div>
-                        <div>
-                            <label for="new-username-input" class="form-label">Nuevo Usuario:</label>
-                            <input type="text" id="new-username-input" class="form-control w-full" required
-                                aria-describedby="new-username-input-help">
-                            <small id="new-username-input-help" class="form-text text-muted">Ingrese el nuevo nombre de
-                                usuario.</small>
-                        </div>
-                        <div class="flex gap-3">
-                            <button type="submit" class="btn btn-primary w-full"
-                                aria-label="Cambiar nombre de usuario">Cambiar</button>
-                            <button type="button" class="btn btn-secondary w-full" data-bs-dismiss="modal"
-                                aria-label="Cancelar cambio de usuario">Cancelar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <footer class="bg-gray-100 py-4 mt-8">
-        <div class="container mx-auto px-4 text-center">
-            <p class="text-sm text-gray-600">Recibos de Luz y Agua</p>
-        </div>
-    </footer>
-
-    <!-- Scripts al final del body para mejor rendimiento -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+    <!-- Script Entry Point -->
     <script src="script.js"></script>
 </body>
 
