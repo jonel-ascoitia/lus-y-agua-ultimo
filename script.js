@@ -512,6 +512,27 @@ const RecibosSystem = {
         }
     },
 
+    async deleteReceipt(service, floor, year, month) {
+        try {
+            this.showSpinner(true);
+            const { error } = await sb.from('receipts').delete().match({ service, floor, year, month });
+            if (error) throw error;
+
+            if (this.data[service][floor] && this.data[service][floor][year]) {
+                delete this.data[service][floor][year][month];
+            }
+
+            this.handleReport();
+            this.updateDashboard();
+            this.showAlert('Registro eliminado correctamente.', 'success');
+        } catch (e) {
+            console.error('Delete error:', e);
+            this.showAlert('Error al eliminar el registro.', 'danger');
+        } finally {
+            this.showSpinner(false);
+        }
+    },
+
     // --- Export Module ---
 
     exportToPDF() {
