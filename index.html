@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Recibos - Luz y Agua</title>
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <!-- Tailwind CSS -->
     <link href="https://cdn.tailwindcss.com/3.4.1" rel="stylesheet">
     <!-- Custom CSS -->
@@ -15,11 +17,12 @@
     <script src="config.js"></script>
     <!-- Chart.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
+
 <body>
     <div id="spinner" class="spinner" role="status" aria-live="polite">
         <div class="spinner-border text-primary" role="status">
@@ -33,7 +36,8 @@
             <p class="text-lg mt-2 text-center">Recibos</p>
             <div class="text-center mt-4">
                 <a href="#main-content" class="btn btn-light" aria-label="Comenzar a usar el sistema">Comience Ahora</a>
-                <button id="logout-btn" class="btn btn-danger ms-2" style="display: none;" onclick="RecibosSystem.logout()" aria-label="Cerrar sesión">Cerrar Sesión</button>
+                <button id="logout-btn" class="btn btn-danger ms-2" style="display: none;"
+                    onclick="RecibosSystem.logout()" aria-label="Cerrar sesión">Cerrar Sesión</button>
             </div>
         </div>
     </header>
@@ -63,16 +67,20 @@
             <nav>
                 <ul class="nav nav-tabs" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="luz-tab" data-bs-toggle="tab" data-bs-target="#luz" type="button" role="tab" aria-controls="luz" aria-selected="true">Luz</button>
+                        <button class="nav-link active" id="luz-tab" data-bs-toggle="tab" data-bs-target="#luz"
+                            type="button" role="tab" aria-controls="luz" aria-selected="true">Luz</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="agua-tab" data-bs-toggle="tab" data-bs-target="#agua" type="button" role="tab" aria-controls="agua" aria-selected="false">Agua</button>
+                        <button class="nav-link" id="agua-tab" data-bs-toggle="tab" data-bs-target="#agua" type="button"
+                            role="tab" aria-controls="agua" aria-selected="false">Agua</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="config-tab" data-bs-toggle="tab" data-bs-target="#config" type="button" role="tab" aria-controls="config" aria-selected="false">Configuración</button>
+                        <button class="nav-link" id="config-tab" data-bs-toggle="tab" data-bs-target="#config"
+                            type="button" role="tab" aria-controls="config" aria-selected="false">Configuración</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="report-tab" data-bs-toggle="tab" data-bs-target="#report" type="button" role="tab" aria-controls="report" aria-selected="false">Reportes</button>
+                        <button class="nav-link" id="report-tab" data-bs-toggle="tab" data-bs-target="#report"
+                            type="button" role="tab" aria-controls="report" aria-selected="false">Reportes</button>
                     </li>
                 </ul>
             </nav>
@@ -86,11 +94,13 @@
                             <select id="luz-floor" class="form-select" required aria-describedby="luz-floor-help">
                                 <option value="" disabled selected>Seleccione un piso</option>
                             </select>
-                            <small id="luz-floor-help" class="form-text text-muted">Seleccione el piso para registrar el consumo.</small>
+                            <small id="luz-floor-help" class="form-text text-muted">Seleccione el piso para registrar el
+                                consumo.</small>
                         </div>
                         <div>
                             <label for="luz-year" class="form-label">Año:</label>
-                            <input type="number" id="luz-year" class="form-control" min="1900" max="9900" required aria-describedby="luz-year-help">
+                            <input type="number" id="luz-year" class="form-control" min="1900" max="9900" required
+                                aria-describedby="luz-year-help">
                             <small id="luz-year-help" class="form-text text-muted">Ingrese el año del recibo.</small>
                         </div>
                         <div>
@@ -98,44 +108,60 @@
                             <select id="luz-month" class="form-select" required aria-describedby="luz-month-help">
                                 <option value="" disabled selected>Seleccione un mes</option>
                             </select>
-                            <small id="luz-month-help" class="form-text text-muted">Seleccione el mes del recibo.</small>
+                            <small id="luz-month-help" class="form-text text-muted">Seleccione el mes del
+                                recibo.</small>
                         </div>
                         <div>
                             <label for="luz-prev" class="form-label">Consumo Anterior (kWh):</label>
-                            <input type="number" id="luz-prev" class="form-control" step="any" required aria-describedby="luz-prev-help">
-                            <small id="luz-prev-help" class="form-text text-muted">Ingrese el consumo anterior en kWh (puede ser negativo para ajustes).</small>
+                            <input type="number" id="luz-prev" class="form-control" step="any" required
+                                aria-describedby="luz-prev-help">
+                            <small id="luz-prev-help" class="form-text text-muted">Ingrese el consumo anterior en kWh
+                                (puede ser negativo para ajustes).</small>
                         </div>
                         <div>
                             <label for="luz-curr" class="form-label">Consumo Actual (kWh):</label>
-                            <input type="number" id="luz-curr" class="form-control" step="any" required aria-describedby="luz-curr-help">
-                            <small id="luz-curr-help" class="form-text text-muted">Ingrese el consumo actual en kWh (puede ser negativo para ajustes).</small>
+                            <input type="number" id="luz-curr" class="form-control" step="any" required
+                                aria-describedby="luz-curr-help">
+                            <small id="luz-curr-help" class="form-text text-muted">Ingrese el consumo actual en kWh
+                                (puede ser negativo para ajustes).</small>
                         </div>
                         <div>
                             <label for="luz-price" class="form-label">Precio por kWh (S/):</label>
-                            <input type="number" id="luz-price" class="form-control" step="any" required aria-describedby="luz-price-help">
-                            <small id="luz-price-help" class="form-text text-muted">Ingrese el precio por kWh en soles.</small>
+                            <input type="number" id="luz-price" class="form-control" step="any" required
+                                aria-describedby="luz-price-help">
+                            <small id="luz-price-help" class="form-text text-muted">Ingrese el precio por kWh en
+                                soles.</small>
                         </div>
                         <div>
                             <label for="luz-fixed-cargo" class="form-label">Cargo Fijo (S/):</label>
-                            <input type="number" id="luz-fixed-cargo" class="form-control" step="any" aria-describedby="luz-fixed-cargo-help">
-                            <small id="luz-fixed-cargo-help" class="form-text text-muted">Ingrese el cargo fijo en soles (opcional).</small>
+                            <input type="number" id="luz-fixed-cargo" class="form-control" step="any"
+                                aria-describedby="luz-fixed-cargo-help">
+                            <small id="luz-fixed-cargo-help" class="form-text text-muted">Ingrese el cargo fijo en soles
+                                (opcional).</small>
                         </div>
                         <div>
                             <label for="luz-fixed-alumbrado" class="form-label">Alumbrado Público (S/):</label>
-                            <input type="number" id="luz-fixed-alumbrado" class="form-control" step="any" aria-describedby="luz-fixed-alumbrado-help">
-                            <small id="luz-fixed-alumbrado-help" class="form-text text-muted">Ingrese el costo de alumbrado público (opcional).</small>
+                            <input type="number" id="luz-fixed-alumbrado" class="form-control" step="any"
+                                aria-describedby="luz-fixed-alumbrado-help">
+                            <small id="luz-fixed-alumbrado-help" class="form-text text-muted">Ingrese el costo de
+                                alumbrado público (opcional).</small>
                         </div>
                         <div>
                             <label for="luz-fixed-ley" class="form-label">Aporte a Ley (S/):</label>
-                            <input type="number" id="luz-fixed-ley" class="form-control" step="any" aria-describedby="luz-fixed-ley-help">
-                            <small id="luz-fixed-ley-help" class="form-text text-muted">Ingrese el aporte a ley en soles (opcional).</small>
+                            <input type="number" id="luz-fixed-ley" class="form-control" step="any"
+                                aria-describedby="luz-fixed-ley-help">
+                            <small id="luz-fixed-ley-help" class="form-text text-muted">Ingrese el aporte a ley en soles
+                                (opcional).</small>
                         </div>
                         <div>
                             <label for="luz-fixed-aporte" class="form-label">Interés/Mora (S/):</label>
-                            <input type="number" id="luz-fixed-aporte" class="form-control" step="any" aria-describedby="luz-fixed-aporte-help">
-                            <small id="luz-fixed-aporte-help" class="form-text text-muted">Ingrese el interés o mora en soles (opcional).</small>
+                            <input type="number" id="luz-fixed-aporte" class="form-control" step="any"
+                                aria-describedby="luz-fixed-aporte-help">
+                            <small id="luz-fixed-aporte-help" class="form-text text-muted">Ingrese el interés o mora en
+                                soles (opcional).</small>
                         </div>
-                        <button type="submit" class="btn btn-primary w-full" aria-label="Calcular y guardar recibo de luz">Calcular y Guardar</button>
+                        <button type="submit" class="btn btn-primary w-full"
+                            aria-label="Calcular y guardar recibo de luz">Calcular y Guardar</button>
                     </form>
                     <div id="luz-result" class="result" role="region" aria-live="polite"></div>
                 </section>
@@ -148,11 +174,13 @@
                             <select id="agua-floor" class="form-select" required aria-describedby="agua-floor-help">
                                 <option value="" disabled selected>Seleccione un piso</option>
                             </select>
-                            <small id="agua-floor-help" class="form-text text-muted">Seleccione el piso para registrar el consumo.</small>
+                            <small id="agua-floor-help" class="form-text text-muted">Seleccione el piso para registrar
+                                el consumo.</small>
                         </div>
                         <div>
                             <label for="agua-year" class="form-label">Año:</label>
-                            <input type="number" id="agua-year" class="form-control" min="1900" max="9900" required aria-describedby="agua-year-help">
+                            <input type="number" id="agua-year" class="form-control" min="1900" max="9900" required
+                                aria-describedby="agua-year-help">
                             <small id="agua-year-help" class="form-text text-muted">Ingrese el año del recibo.</small>
                         </div>
                         <div>
@@ -160,39 +188,53 @@
                             <select id="agua-month" class="form-select" required aria-describedby="agua-month-help">
                                 <option value="" disabled selected>Seleccione un mes</option>
                             </select>
-                            <small id="agua-month-help" class="form-text text-muted">Seleccione el mes del recibo.</small>
+                            <small id="agua-month-help" class="form-text text-muted">Seleccione el mes del
+                                recibo.</small>
                         </div>
                         <div>
                             <label for="agua-prev" class="form-label">Consumo Anterior (m³):</label>
-                            <input type="number" id="agua-prev" class="form-control" step="any" required aria-describedby="agua-prev-help">
-                            <small id="agua-prev-help" class="form-text text-muted">Ingrese el consumo anterior en m³ (puede ser negativo para ajustes).</small>
+                            <input type="number" id="agua-prev" class="form-control" step="any" required
+                                aria-describedby="agua-prev-help">
+                            <small id="agua-prev-help" class="form-text text-muted">Ingrese el consumo anterior en m³
+                                (puede ser negativo para ajustes).</small>
                         </div>
                         <div>
                             <label for="agua-curr" class="form-label">Consumo Actual (m³):</label>
-                            <input type="number" id="agua-curr" class="form-control" step="any" required aria-describedby="agua-curr-help">
-                            <small id="agua-curr-help" class="form-text text-muted">Ingrese el consumo actual en m³ (puede ser negativo para ajustes).</small>
+                            <input type="number" id="agua-curr" class="form-control" step="any" required
+                                aria-describedby="agua-curr-help">
+                            <small id="agua-curr-help" class="form-text text-muted">Ingrese el consumo actual en m³
+                                (puede ser negativo para ajustes).</small>
                         </div>
                         <div>
                             <label for="agua-price" class="form-label">Precio por m³ - Agua (S/):</label>
-                            <input type="number" id="agua-price" class="form-control" step="any" required aria-describedby="agua-price-help">
-                            <small id="agua-price-help" class="form-text text-muted">Ingrese el precio por m³ de agua en soles.</small>
+                            <input type="number" id="agua-price" class="form-control" step="any" required
+                                aria-describedby="agua-price-help">
+                            <small id="agua-price-help" class="form-text text-muted">Ingrese el precio por m³ de agua en
+                                soles.</small>
                         </div>
                         <div>
                             <label for="agua-sewerage" class="form-label">Precio por m³ - Alcantarillado (S/):</label>
-                            <input type="number" id="agua-sewerage" class="form-control" step="any" required aria-describedby="agua-sewerage-help">
-                            <small id="agua-sewerage-help" class="form-text text-muted">Ingrese el precio por m³ de alcantarillado en soles.</small>
+                            <input type="number" id="agua-sewerage" class="form-control" step="any" required
+                                aria-describedby="agua-sewerage-help">
+                            <small id="agua-sewerage-help" class="form-text text-muted">Ingrese el precio por m³ de
+                                alcantarillado en soles.</small>
                         </div>
                         <div>
                             <label for="agua-fixed-cargo" class="form-label">Gastos Fijos (S/):</label>
-                            <input type="number" id="agua-fixed-cargo" class="form-control" step="any" aria-describedby="agua-fixed-cargo-help">
-                            <small id="agua-fixed-cargo-help" class="form-text text-muted">Ingrese los gastos fijos en soles (opcional).</small>
+                            <input type="number" id="agua-fixed-cargo" class="form-control" step="any"
+                                aria-describedby="agua-fixed-cargo-help">
+                            <small id="agua-fixed-cargo-help" class="form-text text-muted">Ingrese los gastos fijos en
+                                soles (opcional).</small>
                         </div>
                         <div>
                             <label for="agua-fixed-aporte" class="form-label">Interés/Mora (S/):</label>
-                            <input type="number" id="agua-fixed-aporte" class="form-control" step="any" aria-describedby="agua-fixed-aporte-help">
-                            <small id="agua-fixed-aporte-help" class="form-text text-muted">Ingrese el interés o mora en soles (opcional).</small>
+                            <input type="number" id="agua-fixed-aporte" class="form-control" step="any"
+                                aria-describedby="agua-fixed-aporte-help">
+                            <small id="agua-fixed-aporte-help" class="form-text text-muted">Ingrese el interés o mora en
+                                soles (opcional).</small>
                         </div>
-                        <button type="submit" class="btn btn-primary w-full" aria-label="Calcular y guardar recibo de agua">Calcular y Guardar</button>
+                        <button type="submit" class="btn btn-primary w-full"
+                            aria-label="Calcular y guardar recibo de agua">Calcular y Guardar</button>
                     </form>
                     <div id="agua-result" class="result" role="region" aria-live="polite"></div>
                 </section>
@@ -201,15 +243,23 @@
                     <h2 class="text-2xl font-semibold mt-3">Configuración</h2>
                     <div class="mb-6">
                         <label for="new-floor" class="form-label">Agregar Nuevo Piso:</label>
-                        <input type="text" id="new-floor" class="form-control" placeholder="Ej: Piso 4" required aria-describedby="new-floor-help">
-                        <small id="new-floor-help" class="form-text text-muted">Ingrese el nombre del nuevo piso.</small>
-                        <button type="button" class="btn btn-success mt-2 w-full" onclick="RecibosSystem.promptPassword('addFloor')" aria-label="Agregar nuevo piso">Agregar</button>
+                        <input type="text" id="new-floor" class="form-control" placeholder="Ej: Piso 4" required
+                            aria-describedby="new-floor-help">
+                        <small id="new-floor-help" class="form-text text-muted">Ingrese el nombre del nuevo
+                            piso.</small>
+                        <button type="button" class="btn btn-success mt-2 w-full"
+                            onclick="RecibosSystem.promptPassword('addFloor')"
+                            aria-label="Agregar nuevo piso">Agregar</button>
                     </div>
                     <h3 class="text-lg font-semibold">Pisos Actuales:</h3>
                     <ul id="floor-list" class="list-group" aria-label="Lista de pisos actuales"></ul>
                     <div class="mt-6 space-y-3">
-                        <button type="button" class="btn btn-warning w-full" onclick="RecibosSystem.promptChangeUsername()" aria-label="Cambiar nombre de usuario">Cambiar Usuario</button>
-                        <button type="button" class="btn btn-warning w-full" onclick="RecibosSystem.promptChangePassword()" aria-label="Cambiar contraseña">Cambiar Contraseña</button>
+                        <button type="button" class="btn btn-warning w-full"
+                            onclick="RecibosSystem.promptChangeUsername()"
+                            aria-label="Cambiar nombre de usuario">Cambiar Usuario</button>
+                        <button type="button" class="btn btn-warning w-full"
+                            onclick="RecibosSystem.promptChangePassword()" aria-label="Cambiar contraseña">Cambiar
+                            Contraseña</button>
                     </div>
                 </section>
                 <!-- Reportes -->
@@ -218,34 +268,43 @@
                     <form id="report-form" novalidate class="space-y-6">
                         <div>
                             <label for="report-service" class="form-label">Servicio:</label>
-                            <select id="report-service" class="form-select" required aria-describedby="report-service-help">
+                            <select id="report-service" class="form-select" required
+                                aria-describedby="report-service-help">
                                 <option value="luz">Luz</option>
                                 <option value="agua">Agua</option>
                             </select>
-                            <small id="report-service-help" class="form-text text-muted">Seleccione el servicio para el reporte.</small>
+                            <small id="report-service-help" class="form-text text-muted">Seleccione el servicio para el
+                                reporte.</small>
                         </div>
                         <div>
                             <label for="report-floor" class="form-label">Piso (o Todos):</label>
                             <select id="report-floor" class="form-select" aria-describedby="report-floor-help">
                                 <option value="">Todos los Pisos</option>
                             </select>
-                            <small id="report-floor-help" class="form-text text-muted">Seleccione un piso o todos para el reporte.</small>
+                            <small id="report-floor-help" class="form-text text-muted">Seleccione un piso o todos para
+                                el reporte.</small>
                         </div>
                         <div>
                             <label for="report-year" class="form-label">Año (vacío para todos):</label>
-                            <input type="number" id="report-year" class="form-control" min="1900" max="9900" placeholder="Ej: 2025" aria-describedby="report-year-help">
-                            <small id="report-year-help" class="form-text text-muted">Ingrese el año o déjelo vacío para todos.</small>
+                            <input type="number" id="report-year" class="form-control" min="1900" max="9900"
+                                placeholder="Ej: 2025" aria-describedby="report-year-help">
+                            <small id="report-year-help" class="form-text text-muted">Ingrese el año o déjelo vacío para
+                                todos.</small>
                         </div>
-                        <button type="submit" class="btn btn-primary w-full" aria-label="Generar reporte">Generar Reporte</button>
+                        <button type="submit" class="btn btn-primary w-full" aria-label="Generar reporte">Generar
+                            Reporte</button>
                     </form>
                     <div id="report-result" class="report-result" role="region" aria-live="polite"></div>
                     <div class="chart-container">
                         <canvas id="consumption-chart" aria-label="Gráfico de consumo"></canvas>
                     </div>
                     <div class="mt-6 flex flex-wrap gap-3">
-                        <button type="button" class="btn btn-secondary flex-1" onclick="RecibosSystem.promptPassword('exportToPDF')" aria-label="Exportar reporte a PDF">Exportar a PDF</button>
-                        <button type="button" class="btn btn-secondary flex-1" onclick="RecibosSystem.promptPassword('exportToWord')" aria-label="Exportar reporte a Word">Exportar a Word</button>
-                        <button type="button" class="btn btn-secondary flex-1" onclick="RecibosSystem.promptPassword('exportToExcel')" aria-label="Exportar reporte a Excel">Exportar a Excel</button>
+                        <button type="button" class="btn btn-secondary flex-1" onclick="RecibosSystem.exportToPDF()"
+                            aria-label="Exportar reporte a PDF">Exportar a PDF</button>
+                        <button type="button" class="btn btn-secondary flex-1" onclick="RecibosSystem.exportToWord()"
+                            aria-label="Exportar reporte a Word">Exportar a Word</button>
+                        <button type="button" class="btn btn-secondary flex-1" onclick="RecibosSystem.exportToExcel()"
+                            aria-label="Exportar reporte a Excel">Exportar a Excel</button>
                     </div>
                 </section>
             </div>
@@ -253,12 +312,14 @@
     </main>
 
     <!-- Modal para Editar Recibo -->
-    <div class="modal fade" id="editReceiptModal" tabindex="-1" aria-labelledby="editReceiptModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editReceiptModal" tabindex="-1" aria-labelledby="editReceiptModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editReceiptModalLabel">Editar Recibo</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal de edición"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Cerrar modal de edición"></button>
                 </div>
                 <div class="modal-body">
                     <form id="edit-receipt-form" novalidate class="space-y-6">
@@ -268,45 +329,62 @@
                         <input type="hidden" id="edit-month">
                         <div>
                             <label for="edit-prev" class="form-label">Consumo Anterior:</label>
-                            <input type="number" id="edit-prev" class="form-control" step="any" required aria-describedby="edit-prev-help">
-                            <small id="edit-prev-help" class="form-text text-muted">Ingrese el consumo anterior (puede ser negativo).</small>
+                            <input type="number" id="edit-prev" class="form-control" step="any" required
+                                aria-describedby="edit-prev-help">
+                            <small id="edit-prev-help" class="form-text text-muted">Ingrese el consumo anterior (puede
+                                ser negativo).</small>
                         </div>
                         <div>
                             <label for="edit-curr" class="form-label">Consumo Actual:</label>
-                            <input type="number" id="edit-curr" class="form-control" step="any" required aria-describedby="edit-curr-help">
-                            <small id="edit-curr-help" class="form-text text-muted">Ingrese el consumo actual (puede ser negativo).</small>
+                            <input type="number" id="edit-curr" class="form-control" step="any" required
+                                aria-describedby="edit-curr-help">
+                            <small id="edit-curr-help" class="form-text text-muted">Ingrese el consumo actual (puede ser
+                                negativo).</small>
                         </div>
                         <div>
                             <label for="edit-price" class="form-label">Precio por unidad (S/):</label>
-                            <input type="number" id="edit-price" class="form-control" step="any" required aria-describedby="edit-price-help">
-                            <small id="edit-price-help" class="form-text text-muted">Ingrese el precio por unidad en soles.</small>
+                            <input type="number" id="edit-price" class="form-control" step="any" required
+                                aria-describedby="edit-price-help">
+                            <small id="edit-price-help" class="form-text text-muted">Ingrese el precio por unidad en
+                                soles.</small>
                         </div>
                         <div id="edit-sewerage-container">
                             <label for="edit-sewerage" class="form-label">Precio por m³ - Alcantarillado (S/):</label>
-                            <input type="number" id="edit-sewerage" class="form-control" step="any" aria-describedby="edit-sewerage-help">
-                            <small id="edit-sewerage-help" class="form-text text-muted">Ingrese el precio por m³ de alcantarillado (solo para agua).</small>
+                            <input type="number" id="edit-sewerage" class="form-control" step="any"
+                                aria-describedby="edit-sewerage-help">
+                            <small id="edit-sewerage-help" class="form-text text-muted">Ingrese el precio por m³ de
+                                alcantarillado (solo para agua).</small>
                         </div>
                         <div id="edit-fixed-cargo-container">
                             <label for="edit-fixed-cargo" class="form-label">Gastos Fijos (S/):</label>
-                            <input type="number" id="edit-fixed-cargo" class="form-control" step="any" aria-describedby="edit-fixed-cargo-help">
-                            <small id="edit-fixed-cargo-help" class="form-text text-muted">Ingrese los gastos fijos en soles (opcional).</small>
+                            <input type="number" id="edit-fixed-cargo" class="form-control" step="any"
+                                aria-describedby="edit-fixed-cargo-help">
+                            <small id="edit-fixed-cargo-help" class="form-text text-muted">Ingrese los gastos fijos en
+                                soles (opcional).</small>
                         </div>
                         <div id="edit-fixed-alumbrado-container" style="display: none;">
                             <label for="edit-fixed-alumbrado" class="form-label">Alumbrado Público (S/):</label>
-                            <input type="number" id="edit-fixed-alumbrado" class="form-control" step="any" aria-describedby="edit-fixed-alumbrado-help">
-                            <small id="edit-fixed-alumbrado-help" class="form-text text-muted">Ingrese el costo de alumbrado público (opcional, solo para luz).</small>
+                            <input type="number" id="edit-fixed-alumbrado" class="form-control" step="any"
+                                aria-describedby="edit-fixed-alumbrado-help">
+                            <small id="edit-fixed-alumbrado-help" class="form-text text-muted">Ingrese el costo de
+                                alumbrado público (opcional, solo para luz).</small>
                         </div>
                         <div id="edit-fixed-ley-container" style="display: none;">
                             <label for="edit-fixed-ley" class="form-label">Aporte a Ley (S/):</label>
-                            <input type="number" id="edit-fixed-ley" class="form-control" step="any" aria-describedby="edit-fixed-ley-help">
-                            <small id="edit-fixed-ley-help" class="form-text text-muted">Ingrese el aporte a ley en soles (opcional, solo para luz).</small>
+                            <input type="number" id="edit-fixed-ley" class="form-control" step="any"
+                                aria-describedby="edit-fixed-ley-help">
+                            <small id="edit-fixed-ley-help" class="form-text text-muted">Ingrese el aporte a ley en
+                                soles (opcional, solo para luz).</small>
                         </div>
                         <div id="edit-fixed-aporte-container">
                             <label for="edit-fixed-aporte" class="form-label">Interés/Mora (S/):</label>
-                            <input type="number" id="edit-fixed-aporte" class="form-control" step="any" aria-describedby="edit-fixed-aporte-help">
-                            <small id="edit-fixed-aporte-help" class="form-text text-muted">Ingrese el interés o mora en soles (opcional).</small>
+                            <input type="number" id="edit-fixed-aporte" class="form-control" step="any"
+                                aria-describedby="edit-fixed-aporte-help">
+                            <small id="edit-fixed-aporte-help" class="form-text text-muted">Ingrese el interés o mora en
+                                soles (opcional).</small>
                         </div>
-                        <button type="submit" class="btn btn-primary w-full" aria-label="Guardar cambios en el recibo">Guardar Cambios</button>
+                        <button type="submit" class="btn btn-primary w-full"
+                            aria-label="Guardar cambios en el recibo">Guardar Cambios</button>
                     </form>
                 </div>
             </div>
@@ -318,19 +396,25 @@
         <div class="modal-dialog">
             <div class="modal-content rounded-lg shadow-lg">
                 <div class="modal-header bg-blue-50 border-b border-gray-200">
-                    <h5 class="modal-title text-lg font-semibold text-blue-800" id="passwordModalLabel">Ingresar Contraseña</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal de contraseña"></button>
+                    <h5 class="modal-title text-lg font-semibold text-blue-800" id="passwordModalLabel">Ingresar
+                        Contraseña</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Cerrar modal de contraseña"></button>
                 </div>
                 <div class="modal-body p-6">
                     <form id="password-form" novalidate class="space-y-6">
                         <div>
                             <label for="password-input" class="form-label">Contraseña:</label>
-                            <input type="password" id="password-input" class="form-control w-full" required aria-describedby="password-input-help">
-                            <small id="password-input-help" class="form-text text-muted">Ingrese su contraseña para confirmar la acción.</small>
+                            <input type="password" id="password-input" class="form-control w-full" required
+                                aria-describedby="password-input-help">
+                            <small id="password-input-help" class="form-text text-muted">Ingrese su contraseña para
+                                confirmar la acción.</small>
                         </div>
                         <div class="flex gap-3">
-                            <button type="submit" class="btn btn-primary w-full" aria-label="Confirmar contraseña">Confirmar</button>
-                            <button type="button" class="btn btn-secondary w-full" data-bs-dismiss="modal" aria-label="Cancelar acción">Cancelar</button>
+                            <button type="submit" class="btn btn-primary w-full"
+                                aria-label="Confirmar contraseña">Confirmar</button>
+                            <button type="button" class="btn btn-secondary w-full" data-bs-dismiss="modal"
+                                aria-label="Cancelar acción">Cancelar</button>
                         </div>
                     </form>
                 </div>
@@ -344,25 +428,34 @@
             <div class="modal-content rounded-lg shadow-lg">
                 <div class="modal-header bg-blue-50 border-b border-gray-200">
                     <h5 class="modal-title text-lg font-semibold text-blue-800" id="loginModalLabel">Iniciar Sesión</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal de inicio de sesión"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Cerrar modal de inicio de sesión"></button>
                 </div>
                 <div class="modal-body p-6">
                     <form id="login-form" novalidate class="space-y-6">
                         <div>
                             <label for="username-input" class="form-label">Usuario:</label>
-                            <input type="text" id="username-input" class="form-control w-full" required aria-describedby="username-input-help">
-                            <small id="username-input-help" class="form-text text-muted">Ingrese su nombre de usuario.</small>
+                            <input type="text" id="username-input" class="form-control w-full" required
+                                aria-describedby="username-input-help">
+                            <small id="username-input-help" class="form-text text-muted">Ingrese su nombre de
+                                usuario.</small>
                         </div>
                         <div>
                             <label for="login-password-input" class="form-label">Contraseña:</label>
-                            <input type="password" id="login-password-input" class="form-control w-full" required aria-describedby="login-password-input-help">
-                            <small id="login-password-input-help" class="form-text text-muted">Ingrese su contraseña.</small>
+                            <input type="password" id="login-password-input" class="form-control w-full" required
+                                aria-describedby="login-password-input-help">
+                            <small id="login-password-input-help" class="form-text text-muted">Ingrese su
+                                contraseña.</small>
                         </div>
                         <div class="flex gap-3">
-                            <button type="submit" class="btn btn-primary w-full" aria-label="Iniciar sesión">Iniciar Sesión</button>
-                            <button type="button" class="btn btn-secondary w-full" data-bs-dismiss="modal" aria-label="Cancelar inicio de sesión">Cancelar</button>
+                            <button type="submit" class="btn btn-primary w-full" aria-label="Iniciar sesión">Iniciar
+                                Sesión</button>
+                            <button type="button" class="btn btn-secondary w-full" data-bs-dismiss="modal"
+                                aria-label="Cancelar inicio de sesión">Cancelar</button>
                         </div>
-                        <a href="#" class="text-blue-600 hover:underline" onclick="RecibosSystem.showForgotPasswordModal()" aria-label="Recuperar contraseña">¿Olvidaste tu contraseña?</a>
+                        <a href="#" class="text-blue-600 hover:underline"
+                            onclick="RecibosSystem.showForgotPasswordModal()"
+                            aria-label="Recuperar contraseña">¿Olvidaste tu contraseña?</a>
                     </form>
                 </div>
             </div>
@@ -370,23 +463,30 @@
     </div>
 
     <!-- Modal para Recuperar Contraseña -->
-    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel" aria-hidden="true">
+    <div class="modal fade" id="forgotPasswordModal" tabindex="-1" aria-labelledby="forgotPasswordModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content rounded-lg shadow-lg">
                 <div class="modal-header bg-blue-50 border-b border-gray-200">
-                    <h5 class="modal-title text-lg font-semibold text-blue-800" id="forgotPasswordModalLabel">Recuperar Contraseña</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal de recuperación de contraseña"></button>
+                    <h5 class="modal-title text-lg font-semibold text-blue-800" id="forgotPasswordModalLabel">Recuperar
+                        Contraseña</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Cerrar modal de recuperación de contraseña"></button>
                 </div>
                 <div class="modal-body p-6">
                     <form id="forgot-password-form" novalidate class="space-y-6">
                         <div>
                             <label for="phone-input" class="form-label">Número de Celular:</label>
-                            <input type="text" id="phone-input" class="form-control w-full" required aria-describedby="phone-input-help">
-                            <small id="phone-input-help" class="form-text text-muted">Ingrese su número de celular registrado.</small>
+                            <input type="text" id="phone-input" class="form-control w-full" required
+                                aria-describedby="phone-input-help">
+                            <small id="phone-input-help" class="form-text text-muted">Ingrese su número de celular
+                                registrado.</small>
                         </div>
                         <div class="flex gap-3">
-                            <button type="submit" class="btn btn-primary w-full" aria-label="Verificar número de celular">Verificar</button>
-                            <button type="button" class="btn btn-secondary w-full" data-bs-dismiss="modal" aria-label="Cancelar recuperación de contraseña">Cancelar</button>
+                            <button type="submit" class="btn btn-primary w-full"
+                                aria-label="Verificar número de celular">Verificar</button>
+                            <button type="button" class="btn btn-secondary w-full" data-bs-dismiss="modal"
+                                aria-label="Cancelar recuperación de contraseña">Cancelar</button>
                         </div>
                     </form>
                 </div>
@@ -395,33 +495,45 @@
     </div>
 
     <!-- Modal para Cambiar Contraseña -->
-    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content rounded-lg shadow-lg">
                 <div class="modal-header bg-blue-50 border-b border-gray-200">
-                    <h5 class="modal-title text-lg font-semibold text-blue-800" id="changePasswordModalLabel">Cambiar Contraseña</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal de cambio de contraseña"></button>
+                    <h5 class="modal-title text-lg font-semibold text-blue-800" id="changePasswordModalLabel">Cambiar
+                        Contraseña</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Cerrar modal de cambio de contraseña"></button>
                 </div>
                 <div class="modal-body p-6">
                     <form id="change-password-form" novalidate class="space-y-6">
                         <div id="current-password-div">
                             <label for="current-password-input" class="form-label">Contraseña Actual:</label>
-                            <input type="password" id="current-password-input" class="form-control w-full" required aria-describedby="current-password-input-help">
-                            <small id="current-password-input-help" class="form-text text-muted">Ingrese su contraseña actual.</small>
+                            <input type="password" id="current-password-input" class="form-control w-full" required
+                                aria-describedby="current-password-input-help">
+                            <small id="current-password-input-help" class="form-text text-muted">Ingrese su contraseña
+                                actual.</small>
                         </div>
                         <div>
                             <label for="new-password-input" class="form-label">Nueva Contraseña:</label>
-                            <input type="password" id="new-password-input" class="form-control w-full" required aria-describedby="new-password-input-help">
-                            <small id="new-password-input-help" class="form-text text-muted">Ingrese la nueva contraseña.</small>
+                            <input type="password" id="new-password-input" class="form-control w-full" required
+                                aria-describedby="new-password-input-help">
+                            <small id="new-password-input-help" class="form-text text-muted">Ingrese la nueva
+                                contraseña.</small>
                         </div>
                         <div>
-                            <label for="confirm-new-password-input" class="form-label">Confirmar Nueva Contraseña:</label>
-                            <input type="password" id="confirm-new-password-input" class="form-control w-full" required aria-describedby="confirm-new-password-input-help">
-                            <small id="confirm-new-password-input-help" class="form-text text-muted">Confirme la nueva contraseña.</small>
+                            <label for="confirm-new-password-input" class="form-label">Confirmar Nueva
+                                Contraseña:</label>
+                            <input type="password" id="confirm-new-password-input" class="form-control w-full" required
+                                aria-describedby="confirm-new-password-input-help">
+                            <small id="confirm-new-password-input-help" class="form-text text-muted">Confirme la nueva
+                                contraseña.</small>
                         </div>
                         <div class="flex gap-3">
-                            <button type="submit" class="btn btn-primary w-full" aria-label="Cambiar contraseña">Cambiar</button>
-                            <button type="button" class="btn btn-secondary w-full" data-bs-dismiss="modal" aria-label="Cancelar cambio de contraseña">Cancelar</button>
+                            <button type="submit" class="btn btn-primary w-full"
+                                aria-label="Cambiar contraseña">Cambiar</button>
+                            <button type="button" class="btn btn-secondary w-full" data-bs-dismiss="modal"
+                                aria-label="Cancelar cambio de contraseña">Cancelar</button>
                         </div>
                     </form>
                 </div>
@@ -430,28 +542,37 @@
     </div>
 
     <!-- Modal para Cambiar Usuario -->
-    <div class="modal fade" id="changeUsernameModal" tabindex="-1" aria-labelledby="changeUsernameModalLabel" aria-hidden="true">
+    <div class="modal fade" id="changeUsernameModal" tabindex="-1" aria-labelledby="changeUsernameModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content rounded-lg shadow-lg">
                 <div class="modal-header bg-blue-50 border-b border-gray-200">
-                    <h5 class="modal-title text-lg font-semibold text-blue-800" id="changeUsernameModalLabel">Cambiar Usuario</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar modal de cambio de usuario"></button>
+                    <h5 class="modal-title text-lg font-semibold text-blue-800" id="changeUsernameModalLabel">Cambiar
+                        Usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Cerrar modal de cambio de usuario"></button>
                 </div>
                 <div class="modal-body p-6">
                     <form id="change-username-form" novalidate class="space-y-6">
                         <div>
                             <label for="current-password-for-username" class="form-label">Contraseña Actual:</label>
-                            <input type="password" id="current-password-for-username" class="form-control w-full" required aria-describedby="current-password-for-username-help">
-                            <small id="current-password-for-username-help" class="form-text text-muted">Ingrese su contraseña actual.</small>
+                            <input type="password" id="current-password-for-username" class="form-control w-full"
+                                required aria-describedby="current-password-for-username-help">
+                            <small id="current-password-for-username-help" class="form-text text-muted">Ingrese su
+                                contraseña actual.</small>
                         </div>
                         <div>
                             <label for="new-username-input" class="form-label">Nuevo Usuario:</label>
-                            <input type="text" id="new-username-input" class="form-control w-full" required aria-describedby="new-username-input-help">
-                            <small id="new-username-input-help" class="form-text text-muted">Ingrese el nuevo nombre de usuario.</small>
+                            <input type="text" id="new-username-input" class="form-control w-full" required
+                                aria-describedby="new-username-input-help">
+                            <small id="new-username-input-help" class="form-text text-muted">Ingrese el nuevo nombre de
+                                usuario.</small>
                         </div>
                         <div class="flex gap-3">
-                            <button type="submit" class="btn btn-primary w-full" aria-label="Cambiar nombre de usuario">Cambiar</button>
-                            <button type="button" class="btn btn-secondary w-full" data-bs-dismiss="modal" aria-label="Cancelar cambio de usuario">Cancelar</button>
+                            <button type="submit" class="btn btn-primary w-full"
+                                aria-label="Cambiar nombre de usuario">Cambiar</button>
+                            <button type="button" class="btn btn-secondary w-full" data-bs-dismiss="modal"
+                                aria-label="Cancelar cambio de usuario">Cancelar</button>
                         </div>
                     </form>
                 </div>
@@ -466,7 +587,10 @@
     </footer>
 
     <!-- Scripts al final del body para mejor rendimiento -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
     <script src="script.js"></script>
 </body>
+
 </html>
