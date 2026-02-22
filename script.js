@@ -10,6 +10,7 @@ const MONTHS = [
 
 const RecibosSystem = {
     data: { luz: {}, agua: {}, config: null },
+    cache: { totals: null },
     floors: [],
     chart: null,
     currentYear: new Date().getFullYear(),
@@ -71,7 +72,7 @@ const RecibosSystem = {
     async loadData() {
         try {
             const { data: sData, error: sErr } = await sb.from('settings').select('value').eq('key', 'config').single();
-            const { data: rData, error: rErr } = await sb.from('receipts').select('*');
+            const { data: rData, error: rErr } = await sb.from('receipts').select('service, floor, year, month, data');
 
             if (sErr && sErr.code !== 'PGRST116') throw sErr;
             if (rErr) throw rErr;
@@ -274,6 +275,7 @@ const RecibosSystem = {
         this.floors.push(val);
         this.data.config.floors = this.floors;
         await this.saveData();
+        this.invalidateCache();
         this.updateFloorsUI();
         document.getElementById('new-floor').value = '';
         this.showAlert('Piso añadido.', 'success');
@@ -288,6 +290,7 @@ const RecibosSystem = {
             this.floors = this.floors.filter(f => f !== floor);
             this.data.config.floors = this.floors;
             await this.saveData();
+            this.invalidateCache();
             this.updateFloorsUI();
             this.showAlert(`Piso ${floor} eliminado.`, 'info');
         } catch (e) {
@@ -359,6 +362,7 @@ const RecibosSystem = {
             if (!this.data[service][floor][year]) this.data[service][floor][year] = {};
             this.data[service][floor][year][month] = resultData;
 
+            this.invalidateCache();
             this.updateDashboard();
             this.showAlert(`Registro de ${service} guardado.`, 'success');
             document.getElementById(`${service}-form`).reset();
@@ -405,7 +409,25 @@ const RecibosSystem = {
             return;
         }
 
-        let html = `
+        const rows = data.map(r => `
+            <tr class="group">
+                <td class="py-4 font-bold">Piso ${r.floor}</td>
+                <td>${MONTHS[r.month - 1]} ${r.year}</td>
+                <td class="text-slate-500 text-xs">${r.prev} → ${r.curr}</td>
+                <td class="font-medium">${r.consumption.toFixed(2)}</td>
+                <td>S/ ${r.subTotal.toFixed(2)}</td>
+                <td class="text-slate-400">S/ ${r.impuesto.toFixed(2)}</td>
+                <td class="text-primary font-bold">S/ ${r.total.toFixed(2)}</td>
+                <td>
+                    <div class="flex gap-2">
+                        <button onclick="RecibosSystem.editReceipt('${r.service}', '${r.floor}', ${r.year}, ${r.month})" class="p-2 hover:bg-blue-50 text-blue-600 rounded-lg"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
+                        <button onclick="RecibosSystem.promptPassword('deleteReceipt', ['${r.service}', '${r.floor}', ${r.year}, ${r.month}])" class="p-2 hover:bg-red-50 text-red-600 rounded-lg"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+
+        container.innerHTML = `
             <table class="w-full text-left" id="report-table">
                 <thead>
                     <tr>
@@ -419,30 +441,9 @@ const RecibosSystem = {
                         <th>Acción</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100">
+                <tbody class="divide-y divide-slate-100">${rows}</tbody>
+            </table>
         `;
-
-        data.forEach(r => {
-            html += `
-                <tr class="group">
-                    <td class="py-4 font-bold">Piso ${r.floor}</td>
-                    <td>${MONTHS[r.month - 1]} ${r.year}</td>
-                    <td class="text-slate-500 text-xs">${r.prev} → ${r.curr}</td>
-                    <td class="font-medium">${r.consumption.toFixed(2)}</td>
-                    <td>S/ ${r.subTotal.toFixed(2)}</td>
-                    <td class="text-slate-400">S/ ${r.impuesto.toFixed(2)}</td>
-                    <td class="text-primary font-bold">S/ ${r.total.toFixed(2)}</td>
-                    <td>
-                        <div class="flex gap-2">
-                            <button onclick="RecibosSystem.editReceipt('${r.service}', '${r.floor}', ${r.year}, ${r.month})" class="p-2 hover:bg-blue-50 text-blue-600 rounded-lg"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg></button>
-                            <button onclick="RecibosSystem.promptPassword('deleteReceipt', ['${r.service}', '${r.floor}', ${r.year}, ${r.month}])" class="p-2 hover:bg-red-50 text-red-600 rounded-lg"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
-                        </div>
-                    </td>
-                </tr>
-            `;
-        });
-
-        container.innerHTML = html + '</tbody></table>';
     },
 
     editReceipt(service, floor, year, month) {
@@ -502,6 +503,7 @@ const RecibosSystem = {
             this.data[s][fl][y][m] = resultData;
 
             bootstrap.Modal.getInstance(document.getElementById('editReceiptModal')).hide();
+            this.invalidateCache();
             this.handleReport();
             this.updateDashboard();
             this.showAlert('Registro actualizado.', 'success');
@@ -522,6 +524,7 @@ const RecibosSystem = {
                 delete this.data[service][floor][year][month];
             }
 
+            this.invalidateCache();
             this.handleReport();
             this.updateDashboard();
             this.showAlert('Registro eliminado correctamente.', 'success');
@@ -629,6 +632,11 @@ const RecibosSystem = {
     // --- Utilities ---
 
     updateDashboard() {
+        if (this.cache.totals) {
+            this.renderDashboard(this.cache.totals);
+            return;
+        }
+
         let lT = 0, aT = 0;
         const sumAll = (scope) => {
             let s = 0;
@@ -643,9 +651,18 @@ const RecibosSystem = {
             aT += sumAll(this.data.agua[f]);
         });
 
-        document.getElementById('total-luz').textContent = lT.toFixed(2);
-        document.getElementById('total-agua').textContent = aT.toFixed(2);
-        document.getElementById('total-floors').textContent = this.floors.length;
+        this.cache.totals = { luz: lT, agua: aT, floors: this.floors.length };
+        this.renderDashboard(this.cache.totals);
+    },
+
+    renderDashboard(totals) {
+        document.getElementById('total-luz').textContent = totals.luz.toFixed(2);
+        document.getElementById('total-agua').textContent = totals.agua.toFixed(2);
+        document.getElementById('total-floors').textContent = totals.floors;
+    },
+
+    invalidateCache() {
+        this.cache.totals = null;
     },
 
     updateChart(data) {
