@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SUREC - Gestión de Recibos Profesional</title>
+    <title>Sistema de Recibos Profesional</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,6 +17,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
@@ -50,10 +51,11 @@
     <script src="config.js"></script>
 </head>
 
-<body class="bg-slate-50 font-sans text-slate-900 min-h-screen">
+<body
+    class="bg-slate-50 dark:bg-slate-900 font-sans text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-300">
     <!-- Overlay Spinner -->
     <div id="spinner"
-        class="fixed inset-0 z-[9999] flex items-center justify-center bg-white/80 backdrop-blur-sm transition-opacity duration-300 pointer-events-none opacity-0">
+        class="fixed inset-0 z-[9999] flex items-center justify-center bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm transition-opacity duration-300 pointer-events-none opacity-0">
         <div class="flex flex-col items-center">
             <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
             <p class="mt-4 text-primary font-medium animate-pulse">Cargando...</p>
@@ -72,12 +74,25 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold tracking-tight">SUREC</h1>
+                    <h1 class="text-2xl font-bold tracking-tight">Sistema de Recibos</h1>
                     <p class="text-[10px] uppercase tracking-[0.2em] text-primary-300 font-semibold opacity-70">
                         Logística de Servicios</p>
                 </div>
             </div>
             <div class="flex items-center gap-4">
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-white/10 transition-colors"
+                    onclick="RecibosSystem.toggleTheme()" aria-label="Cambiar tema">
+                    <svg id="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 hidden" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 6.343l-.707-.707M12 5a7 7 0 000 14 7 7 0 000-14z" />
+                    </svg>
+                    <svg id="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
                 <button id="logout-btn"
                     class="hidden bg-white/10 hover:bg-red-500 text-white px-4 py-2 rounded-full text-sm font-medium transition-all group"
                     onclick="RecibosSystem.logout()">
@@ -533,9 +548,9 @@
                         <div class="mb-12">
                             <span class="text-primary font-bold tracking-widest uppercase text-xs">Bienvenido al Panel
                                 de Control</span>
-                            <h1 class="text-6xl font-black mt-2">SUREC.</h1>
-                            <p class="text-slate-400 mt-4 max-w-sm">Acceda al sistema de gestión de recibos para
-                                controlar consumos y generar reportes financieros.</p>
+                            <h1 class="text-6xl font-black mt-2 leading-tight">Sistema de<br>Recibos</h1>
+                            <p class="text-slate-400 mt-4 max-w-sm">Acceda al panel administrativo para gestionar
+                                consumos y generar reportes financieros.</p>
                         </div>
                         <form id="login-form" class="max-w-md space-y-6">
                             <div class="space-y-2">

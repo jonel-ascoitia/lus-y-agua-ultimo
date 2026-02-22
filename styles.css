@@ -1,4 +1,4 @@
-/* Professional Theme for SUREC */
+/* Professional Theme for Sistema de Recibos */
 
 :root {
     --primary: #4f46e5;
@@ -8,11 +8,26 @@
     --accent: #f59e0b;
     --dark: #1e1b4b;
     --bg-main: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
     --glass: rgba(255, 255, 255, 0.7);
+}
+
+.dark {
+    --bg-main: #0f172a;
+    --card-bg: #1e293b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+    --glass: rgba(15, 23, 42, 0.7);
 }
 
 body {
     background: var(--bg-main);
+    color: var(--text-main);
+    transition: background-color 0.3s, color 0.3s;
 }
 
 /* Glassmorphism Classes */
@@ -20,7 +35,40 @@ body {
     background: var(--glass);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid var(--border-color);
+}
+
+/* Custom Card Styling */
+.stats-card,
+.tab-content,
+.bg-white {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+}
+
+.bg-slate-50 {
+    background-color: var(--bg-main) !important;
+}
+
+.text-slate-900 {
+    color: var(--text-main) !important;
+}
+
+.text-slate-800 {
+    color: var(--text-main) !important;
+}
+
+.text-slate-700 {
+    color: var(--text-main) !important;
+}
+
+.text-slate-500 {
+    color: var(--text-muted) !important;
+}
+
+.border-slate-100,
+.border-slate-200 {
+    border-color: var(--border-color) !important;
 }
 
 /* Animations */
@@ -50,6 +98,9 @@ input[type="number"],
 input[type="text"],
 input[type="password"],
 select {
+    background-color: var(--card-bg) !important;
+    color: var(--text-main) !important;
+    border-color: var(--border-color) !important;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
@@ -61,7 +112,7 @@ select:focus {
 /* Stats Cards Hover */
 .stats-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.2);
 }
 
 /* Tab Active Styles */
@@ -70,31 +121,31 @@ select:focus {
 }
 
 #main-tabs button[aria-selected="true"] {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
 }
 
 /* Custom Table Decoration */
 #report-table thead th {
-    background-color: #f1f5f9;
-    color: #475569;
+    background-color: var(--bg-main);
+    color: var(--text-muted);
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     padding: 1rem;
-    border-bottom: 2px solid #e2e8f0;
+    border-bottom: 2px solid var(--border-color);
 }
 
 #report-table tbody td {
     padding: 1rem;
     vertical-align: middle;
-    color: #334155;
+    color: var(--text-main);
     font-weight: 500;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid var(--border-color);
 }
 
 #report-table tr:hover td {
-    background-color: #f8fafc;
+    background-color: var(--bg-main);
 }
 
 /* Spinner Backdrop */
@@ -114,26 +165,31 @@ select:focus {
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f5f9;
+    background: var(--bg-main);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
+    background: var(--border-color);
     border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+    background: var(--text-muted);
 }
 
 /* Modal Enhancements */
-.modal-fullscreen .modal-content {
-    background: radial-gradient(circle at top right, #1e1b4b, #000000);
+.modal-content {
+    background-color: var(--card-bg) !important;
+    color: var(--text-main) !important;
 }
 
-/* Chart Canvas Padding */
-.chart-container {
-    padding: 1rem;
+.modal-header,
+.modal-footer {
+    border-color: var(--border-color) !important;
+}
+
+.modal-fullscreen .modal-content {
+    background: radial-gradient(circle at top right, var(--dark), #000000);
 }
 
 /* Responsive adjustments */

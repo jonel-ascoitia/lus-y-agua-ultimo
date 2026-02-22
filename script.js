@@ -38,6 +38,7 @@ const RecibosSystem = {
 
             // Preparar UI
             this.setupUI();
+            this.applyTheme();
             this.setupEventListeners();
 
             // Login Check
@@ -676,6 +677,36 @@ const RecibosSystem = {
     handleGlobalError(e) {
         console.error('SUREC Error:', e);
         this.showAlert('Falla crítica en el sistema.', 'danger');
+    },
+
+    // --- Theme Management ---
+
+    toggleTheme() {
+        const isDark = document.body.classList.contains('dark');
+        if (isDark) {
+            document.body.classList.remove('dark');
+            localStorage.setItem('surec_theme', 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem('surec_theme', 'dark');
+        }
+        this.applyTheme();
+    },
+
+    applyTheme() {
+        const theme = localStorage.getItem('surec_theme') || 'light';
+        const sun = document.getElementById('theme-icon-sun');
+        const moon = document.getElementById('theme-icon-moon');
+
+        if (theme === 'dark') {
+            document.body.classList.add('dark');
+            if (sun) sun.classList.remove('hidden');
+            if (moon) moon.classList.add('hidden');
+        } else {
+            document.body.classList.remove('dark');
+            if (sun) sun.classList.add('hidden');
+            if (moon) moon.classList.remove('hidden');
+        }
     }
 };
 
