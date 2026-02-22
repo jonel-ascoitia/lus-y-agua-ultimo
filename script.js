@@ -309,19 +309,6 @@ const RecibosSystem = {
         }
     },
 
-    validateNumberInput(value, fieldName, tabId) {
-        const num = parseFloat(value);
-        if (isNaN(num)) {
-            this.showAlert(`El campo ${fieldName} debe ser un número válido.`, 'danger', tabId);
-            return false;
-        }
-        if (fieldName !== 'Consumo Anterior' && fieldName !== 'Consumo Actual' && num < 0) {
-            this.showAlert(`El campo ${fieldName} debe ser un número no negativo.`, 'danger', tabId);
-            return false;
-        }
-        return true;
-    },
-
     sanitizeInput(input) {
         return typeof input === 'string' ? input.replace(/[<>&"']/g, '') : input;
     },
@@ -549,7 +536,7 @@ const RecibosSystem = {
                 const mData = fData[y];
                 if (!mData) return;
                 Object.entries(mData).forEach(([m, d]) => {
-                    results.push({ floor: f, year: y, month: m, ...d });
+                    results.push({ floor: f, year: parseInt(y), month: parseInt(m), ...d });
                 });
             });
         });
@@ -568,7 +555,7 @@ const RecibosSystem = {
             return;
         }
 
-        let h = `<div class="table-responsive"><table class="table table-hover">
+        let h = `<div class="table-responsive"><table id="report-table" class="table table-hover">
             <thead><tr><th>Piso</th><th>Periodo</th><th>Consumo</th><th>Total</th><th>Acciones</th></tr></thead><tbody>`;
 
         data.forEach(r => {
@@ -707,6 +694,80 @@ const RecibosSystem = {
             },
             options: { scales: { y: { position: 'left' }, y1: { position: 'right', grid: { drawOnChartArea: false } } } }
         });
+    },
+
+    exportToPDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const service = document.getElementById('report-service').value.toUpperCase();
+
+        doc.setFontSize(18);
+        doc.text(`REPORTE DE CONSUMO - ${service}`, 14, 20);
+        doc.setFontSize(11);
+        doc.text(`Fecha de generación: ${new Date().toLocaleString()}`, 14, 30);
+
+        doc.autoTable({
+            html: '#report-table',
+            startY: 40,
+            columns: [
+                { header: 'Piso', dataKey: 'floor' },
+                { header: 'Periodo', dataKey: 'period' },
+                { header: 'Consumo', dataKey: 'consumption' },
+                { header: 'Total (S/)', dataKey: 'total' }
+            ],
+            didParseCell: (data) => {
+                if (data.column.index === 4) data.cell.text = ''; // Ocultar columna de acciones
+            }
+        });
+
+        doc.save(`reporte_${service.toLowerCase()}_${Date.now()}.pdf`);
+    },
+
+    exportToExcel() {
+        const table = document.getElementById('report-table');
+        if (!table) return;
+
+        let csv = [];
+        const rows = table.querySelectorAll('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            let row = [], cols = rows[i].querySelectorAll('td, th');
+            for (let j = 0; j < cols.length - 1; j++) { // Excluir columna de acciones
+                row.push('"' + cols[j].innerText.trim() + '"');
+            }
+            csv.push(row.join(','));
+        }
+
+        const csvContent = "\uFEFF" + csv.join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        saveAs(blob, `reporte_${Date.now()}.csv`);
+    },
+
+    exportToWord() {
+        const table = document.getElementById('report-table');
+        if (!table) return;
+
+        const service = document.getElementById('report-service').value.toUpperCase();
+        let html = `
+            <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+            <head><meta charset='utf-8'><title>Reporte</title></head>
+            <body>
+                <h1>REPORTE DE CONSUMO - ${service}</h1>
+                <p>Generado el: ${new Date().toLocaleString()}</p>
+                <table border='1' style='border-collapse: collapse;'>
+                    ${table.innerHTML}
+                </table>
+            </body>
+            </html>
+        `;
+
+        // Limpiar el HTML: remover botones de acción
+        html = html.replace(/<button.*?<\/button>/g, '');
+        html = html.replace(/<th>Acciones<\/th>/g, '');
+        html = html.replace(/<td>\s*<\/td>/g, '');
+
+        const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+        saveAs(blob, `reporte_${service.toLowerCase()}_${Date.now()}.doc`);
     }
 };
 
